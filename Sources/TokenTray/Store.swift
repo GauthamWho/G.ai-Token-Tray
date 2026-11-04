@@ -142,10 +142,14 @@ final class Store: ObservableObject {
 
     /// "Use this": copy the key after Touch ID / password, then clear the clipboard after 60 s.
     func copyKey(_ id: UUID) async -> Bool {
-        guard await Keychain.confirmOwner(reason: "copy your API key"), let secret = Keychain.load(id) else { return false }
+        let name = keys.first { $0.id == id }?.nickname ?? "your API key"
+        guard await Keychain.confirmOwner(reason: "copy the key \"\(name)\""), let secret = Keychain.load(id) else { return false }
         let pb = NSPasteboard.general
         pb.clearContents()
         pb.setString(secret, forType: .string)
+        // Tell clipboard managers (including Gautham's Clipboard) this is a secret not to keep.
+        pb.setString("", forType: NSPasteboard.PasteboardType("org.nspasteboard.ConcealedType"))
+        pb.setString("", forType: NSPasteboard.PasteboardType("org.nspasteboard.TransientType"))
         let stamp = pb.changeCount
         DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
             if pb.changeCount == stamp { pb.clearContents() }

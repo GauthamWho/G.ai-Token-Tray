@@ -90,23 +90,23 @@ struct AddKeyView: View {
             FieldOrStill(placeholder: "Paste any AI API key", text: $secret, secure: true, font: DS.Text.mono) { start() }
                 .padding(10)
                 .glassCard(radius: 10)
-            Text(hint).font(DS.Text.meta).foregroundStyle(DS.Palette.secondary).contentTransition(.opacity)
+            Text(hint).font(DS.Text.meta).foregroundStyle(DS.Palette.meta).contentTransition(.opacity)
             FieldOrStill(placeholder: "Name (optional)", text: $name)
                 .padding(10).glassCard(radius: 10)
             if case .failed(let why) = phase {
                 Label(why, systemImage: "exclamationmark.triangle.fill")
-                    .font(DS.Text.body).foregroundStyle(DS.Palette.critical)
+                    .font(DS.Text.body).foregroundStyle(DS.Palette.criticalText)
                     .fixedSize(horizontal: false, vertical: true)
                     .transition(.rise)
             }
             Text("The key is checked with its own provider, then kept only in your Mac's Keychain.")
-                .font(DS.Text.meta).foregroundStyle(DS.Palette.tertiary).fixedSize(horizontal: false, vertical: true)
+                .font(DS.Text.meta).foregroundStyle(DS.Palette.meta).fixedSize(horizontal: false, vertical: true)
             HStack {
                 Spacer()
                 Button("Cancel", action: close).keyboardShortcut(.cancelAction).glassButton()
                 Button("Check & add") { start() }
                     .keyboardShortcut(.defaultAction)
-                    .glassButton(prominent: true, tint: DS.Palette.tint)
+                    .glassButton(prominent: true, tint: DS.Palette.tintFill)
                     .buttonBorderShape(.capsule)
                     .disabled(secret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
@@ -147,7 +147,7 @@ struct AddKeyView: View {
                 if still { Image(systemName: "circle.dotted").foregroundStyle(DS.Palette.tint) }
                 else { ProgressView().controlSize(.small) }
                 Text("Asked \(tried.count) of \(Provider.allCases.count) providers")
-                    .font(DS.Text.body).foregroundStyle(DS.Palette.secondary).monospacedDigit()
+                    .font(DS.Text.body).foregroundStyle(DS.Palette.meta).monospacedDigit()
                     .contentTransition(.numericText())
             }
         }
@@ -176,7 +176,7 @@ struct AddKeyView: View {
                     HStack(spacing: 5) {
                         StatusLabel(health: entry.health)
                         Text(byTesting ? "Identified by testing it" : "Recognised and confirmed")
-                            .font(DS.Text.meta).foregroundStyle(DS.Palette.secondary)
+                            .font(DS.Text.meta).foregroundStyle(DS.Palette.meta)
                     }
                     Text(PanelText.summary(entry)).font(DS.Text.figure).monospacedDigit()
                 }
@@ -192,7 +192,7 @@ struct AddKeyView: View {
                     reset(); close()
                 }
                 .keyboardShortcut(.defaultAction)
-                .glassButton(prominent: true, tint: DS.Palette.tint)
+                .glassButton(prominent: true, tint: DS.Palette.tintFill)
                     .buttonBorderShape(.capsule)
             }
         }
@@ -239,7 +239,7 @@ struct AddKeyView: View {
 
     private func consent(_ reason: String) -> some View {
         VStack(alignment: .leading, spacing: DS.Space.m) {
-            Text(reason).font(DS.Text.body).foregroundStyle(DS.Palette.secondary)
+            Text(reason).font(DS.Text.body).foregroundStyle(DS.Palette.meta)
                 .fixedSize(horizontal: false, vertical: true)
             Menu {
                 ForEach(Provider.allCases, id: \.self) { p in
@@ -249,7 +249,7 @@ struct AddKeyView: View {
                 Label("Choose the provider", systemImage: "list.bullet").font(DS.Text.body.weight(.medium))
             }
             .menuStyle(.button)
-            .glassButton(prominent: true, tint: DS.Palette.tint)
+            .glassButton(prominent: true, tint: DS.Palette.tintFill)
             .buttonBorderShape(.capsule)
             .fixedSize()
             VStack(alignment: .leading, spacing: DS.Space.xs) {
@@ -260,7 +260,7 @@ struct AddKeyView: View {
                 .glassButton()
                 .buttonBorderShape(.capsule)
                 Text("This sends the key to each provider's official API to see which one accepts it.")
-                    .font(DS.Text.meta).foregroundStyle(DS.Palette.tertiary)
+                    .font(DS.Text.meta).foregroundStyle(DS.Palette.meta)
                     .fixedSize(horizontal: false, vertical: true)
             }
             HStack {

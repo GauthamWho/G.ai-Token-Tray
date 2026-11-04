@@ -10,7 +10,9 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp .build/release/TokenTray "$APP/Contents/MacOS/TokenTray"
 cp Support/Info.plist "$APP/Contents/Info.plist"
 cp Support/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
-codesign --force --sign - "$APP"
+# A stable identity keeps Keychain and Touch ID trust across rebuilds (ad-hoc changes every build).
+SIGN_ID="${SIGN_ID:-$(security find-identity -p codesigning -v 2>/dev/null | awk '/Apple Development|Developer ID Application/ {print $2; exit}')}"
+codesign --force --sign "${SIGN_ID:--}" "$APP"
 echo "Built $APP"
 if [ "$1" = "--open" ]; then
   pkill -x TokenTray 2>/dev/null || true

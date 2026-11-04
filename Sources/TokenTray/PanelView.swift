@@ -47,7 +47,7 @@ struct PanelView: View {
             Spacer()
             TimelineView(.periodic(from: .now, by: 1)) { ctx in
                 Text(store.refreshing ? "Checking…" : store.lastRefresh.map { "Updated \(Fmt.ago($0, now: ctx.date))" } ?? "")
-                    .font(DS.Text.meta).foregroundStyle(DS.Palette.tertiary).monospacedDigit()
+                    .font(DS.Text.meta).foregroundStyle(DS.Palette.meta).monospacedDigit()
                     .contentTransition(.opacity)
             }
             Button { Motion.tap(); Task { await store.refresh() } } label: {
@@ -56,10 +56,11 @@ struct PanelView: View {
             .glassButton()
             .controlSize(.small)
             .buttonBorderShape(.circle)
-            .help("Check all keys now")
+            .help("Check all keys now (⌘R)")
+            .keyboardShortcut("r")
             .disabled(store.refreshing)
         }
-        .padding(.horizontal, DS.Space.xs)
+        .padding(.horizontal, DS.Space.s)
         .padding(.bottom, DS.Space.m)
     }
 
@@ -87,23 +88,27 @@ struct PanelView: View {
             }
             .glassButton()
             .buttonBorderShape(.capsule)
+            .keyboardShortcut("n")
+            .help("Add key (⌘N)")
             Spacer()
+            Text("\(store.keys.count) \(store.keys.count == 1 ? "key" : "keys")")
+                .font(DS.Text.meta).foregroundStyle(DS.Palette.meta)
             Group {
                 if still {
-                    Image(systemName: "gearshape").font(.system(size: 13)).foregroundStyle(DS.Palette.secondary)
+                    Image(systemName: "gearshape").font(.system(size: 13)).foregroundStyle(DS.Palette.meta)
                 } else {
                     Menu {
                         Button("Check all keys now") { Task { await store.refresh() } }
                         Divider()
-                        Button("Quit \(Brand.name)") { NSApp.terminate(nil) }
+                        Button("Quit \(Brand.name)") { NSApp.terminate(nil) }.keyboardShortcut("q")
                     } label: {
-                        Image(systemName: "gearshape").font(.system(size: 13)).foregroundStyle(DS.Palette.secondary)
+                        Image(systemName: "gearshape").font(.system(size: 13)).foregroundStyle(DS.Palette.meta)
                     }
                     .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
                 }
             }
-            .padding(.trailing, DS.Space.xs)
         }
+        .padding(.horizontal, DS.Space.s)
         .padding(.top, DS.Space.m)
         .overlay(alignment: .top) {
             Rectangle().fill(DS.Palette.separator).frame(height: 0.5)
@@ -155,7 +160,7 @@ enum PanelText {
             return e.key.provider.display
         }
         if let w = s.limits.min(by: { $0.fraction < $1.fraction }) { return w.name.prefix(1).uppercased() + w.name.dropFirst() }
-        return "Active · usage not shared"
+        return "Works · \(e.key.provider.display.split(separator: " ").first ?? "") doesn't share usage"
     }
 
     /// One line for the add-key result.
@@ -198,7 +203,7 @@ struct HeroCard: View {
         let fig = PanelText.figure(entry)
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Overline("Best right now")
+                Overline("Use this now")
                 Spacer()
                 StatusLabel(health: entry.health, text: StatusLabel.word(entry.health))
             }
@@ -207,7 +212,7 @@ struct HeroCard: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(entry.key.nickname).font(DS.Text.title).lineLimit(1)
                     Text("\(entry.key.provider.display) · \(entry.key.masked)")
-                        .font(DS.Text.meta).foregroundStyle(DS.Palette.secondary).lineLimit(1)
+                        .font(DS.Text.meta).foregroundStyle(DS.Palette.meta).lineLimit(1)
                 }
                 Spacer(minLength: DS.Space.s)
                 Button {
@@ -224,9 +229,10 @@ struct HeroCard: View {
                         .font(DS.Text.body.weight(.medium))
                         .contentTransition(.symbolEffect(.replace))
                 }
-                .glassButton(prominent: true, tint: DS.Palette.tint)
+                .glassButton(prominent: true, tint: DS.Palette.tintFill)
                 .buttonBorderShape(.capsule)
-                .help("Copy this key (asks for Touch ID). The clipboard clears after 60 seconds.")
+                .keyboardShortcut(.defaultAction)
+                .help("Copy this key (↩, asks for Touch ID). The clipboard clears after 60 seconds.")
             }
             .padding(.top, DS.Space.s + 2)
 
@@ -234,29 +240,28 @@ struct HeroCard: View {
                 Text(fig.value).font(DS.Text.heroFigure).tracking(-0.5).monospacedDigit()
                     .contentTransition(.numericText())
                     .animation(Motion.roll, value: fig.value)
-                Text(fig.unit).font(DS.Text.meta).foregroundStyle(DS.Palette.secondary)
+                Text(fig.unit).font(DS.Text.meta).foregroundStyle(DS.Palette.meta)
                 Spacer(minLength: 0)
                 if let r = Fmt.runway(entry.runwayDays) {
-                    Text(r).font(DS.Text.meta).foregroundStyle(DS.Palette.secondary)
+                    Text(r).font(DS.Text.meta).foregroundStyle(DS.Palette.meta)
                 }
             }
             .padding(.top, DS.Space.m + 2)
             if let f = fig.fraction {
                 MeterBar(fraction: f, color: MeterBar.color(for: f)).padding(.top, DS.Space.s)
             }
-            Text(why).font(DS.Text.body).foregroundStyle(DS.Palette.secondary)
+            Text(why).font(DS.Text.body).foregroundStyle(DS.Palette.meta)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, DS.Space.m)
             if open, let s = entry.status {
                 DetailsList(status: s, key: entry.key).padding(.top, DS.Space.m).transition(.rise)
             }
         }
-        .padding(DS.Space.m + 2)
+        .padding(DS.Space.l)
         .contentShape(Rectangle())
         .onTapGesture { withAnimation(reduce ? nil : Motion.arrive) { open.toggle() } }
-        .pointerGlow(DS.Palette.positive, radius: 170, strength: 0.18, corner: DS.Radius.card)
-        .glassCard(DS.Palette.positive.opacity(0.45), radius: DS.Radius.card, interactive: true)
-        .tiltAndFling(3)
+        .pointerGlow(.white, radius: 170, strength: 0.2, corner: DS.Radius.card)
+        .glassCard(radius: DS.Radius.card, interactive: true)
     }
 }
 
@@ -264,9 +269,9 @@ struct NoneCard: View {
     let why: String
     var body: some View {
         VStack(alignment: .leading, spacing: DS.Space.s) {
-            HStack { Overline("Best right now"); Spacer(); StatusLabel(health: .error, text: "Nothing usable") }
+            HStack { Overline("Use this now"); Spacer(); StatusLabel(health: .error, text: "Nothing usable") }
             Text("No key has room right now").font(DS.Text.title)
-            Text(why).font(DS.Text.body).foregroundStyle(DS.Palette.secondary)
+            Text(why).font(DS.Text.body).foregroundStyle(DS.Palette.meta)
         }
         .padding(DS.Space.m + 2).frame(maxWidth: .infinity, alignment: .leading)
         .glassCard(DS.Palette.critical.opacity(0.4), radius: DS.Radius.card)
@@ -280,9 +285,9 @@ struct EmptyCard: View {
             AppMark(size: 30)
             Text("Add your first key").font(DS.Text.title).padding(.top, DS.Space.xs)
             Text("Paste any AI key. TokenTray finds the provider and reads its credit and limits.")
-                .font(DS.Text.body).foregroundStyle(DS.Palette.secondary).multilineTextAlignment(.center)
+                .font(DS.Text.body).foregroundStyle(DS.Palette.meta).multilineTextAlignment(.center)
             Button("Add key") { AddKeyWindow.show(store: store) }
-                .glassButton(prominent: true, tint: DS.Palette.tint)
+                .glassButton(prominent: true, tint: DS.Palette.tintFill)
                 .buttonBorderShape(.capsule)
                 .padding(.top, DS.Space.s)
         }
@@ -312,7 +317,7 @@ struct KeyRow: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(entry.key.nickname).font(DS.Text.name).lineLimit(1)
                     Text(metaOverride ?? PanelText.meta(entry)).font(DS.Text.meta)
-                        .foregroundStyle(metaOverride != nil || entry.health <= .low ? DS.Palette.secondary : DS.Palette.critical)
+                        .foregroundStyle(metaOverride != nil || entry.health <= .low ? DS.Palette.meta : DS.Palette.criticalText)
                         .lineLimit(1)
                 }
                 Spacer(minLength: DS.Space.s)
@@ -330,7 +335,8 @@ struct KeyRow: View {
                 RoundedRectangle(cornerRadius: DS.Radius.row, style: .continuous).fill(DS.Palette.fill)
             }
         }
-        .pointerGlow(DS.Palette.tint, radius: 110, strength: 0.12, corner: DS.Radius.row)
+        .pointerGlow(.white, radius: 120, strength: 0.16, corner: DS.Radius.row)
+        .offset(y: hover && !reduce ? -1 : 0)
         .contentShape(Rectangle())
         .onHover { h in withAnimation(Motion.quick) { hover = h } }
         .onTapGesture { withAnimation(reduce ? nil : Motion.arrive) { open.toggle() } }
@@ -341,7 +347,7 @@ struct KeyRow: View {
         .contextMenu {
             Button("Copy key (Touch ID)") { Task { _ = await store.copyKey(entry.id) } }
             Divider()
-            Button("Remove \(entry.key.nickname)", role: .destructive) { withAnimation(Motion.arrive) { store.remove(entry.id) } }
+            Button("Remove \(entry.key.nickname)", role: .destructive) { withAnimation(reduce ? nil : Motion.arrive) { store.remove(entry.id) } }
         }
     }
 
@@ -353,7 +359,7 @@ struct KeyRow: View {
                     Text(Fmt.countdown(to: at, now: ctx.date)).font(DS.Text.figure)
                         .contentTransition(.numericText(countsDown: true))
                         .animation(Motion.roll, value: Int(ctx.date.timeIntervalSince1970))
-                    Text(Fmt.clock(at)).font(DS.Text.meta).foregroundStyle(DS.Palette.tertiary)
+                    Text(Fmt.clock(at)).font(DS.Text.meta).foregroundStyle(DS.Palette.meta)
                 }
                 .monospacedDigit()
             }
@@ -362,7 +368,7 @@ struct KeyRow: View {
             HStack(spacing: DS.Space.s - 2) {
                 if entry.health != .ok { Circle().fill(DS.Palette.status(entry.health)).frame(width: 6, height: 6) }
                 Text(v).font(DS.Text.figure).monospacedDigit()
-                    .foregroundStyle(v == "Ready" || entry.status?.stale == true ? DS.Palette.secondary : DS.Palette.label)
+                    .foregroundStyle(v == "Ready" || entry.status?.stale == true ? DS.Palette.meta : DS.Palette.label)
                     .contentTransition(.numericText())
                     .animation(Motion.roll, value: v)
             }
@@ -373,6 +379,7 @@ struct KeyRow: View {
 /// Everything the provider told us about a key.
 struct DetailsList: View {
     @EnvironmentObject var store: Store
+    @Environment(\.accessibilityReduceMotion) private var reduce
     let status: KeyStatus
     let key: KeyRecord
 
@@ -393,13 +400,13 @@ struct DetailsList: View {
                 row("Checked", Fmt.clock(status.updatedAt))
             }
             if !status.note.isEmpty {
-                Text(status.note).font(DS.Text.meta).foregroundStyle(DS.Palette.secondary)
+                Text(status.note).font(DS.Text.meta).foregroundStyle(DS.Palette.meta)
                     .fixedSize(horizontal: false, vertical: true)
             }
             HStack(spacing: DS.Space.s) {
                 Button("Copy key") { Task { _ = await store.copyKey(key.id) } }.glassButton()
-                Button("Remove", role: .destructive) { withAnimation(Motion.arrive) { store.remove(key.id) } }
-                    .glassButton(tint: DS.Palette.critical)
+                Button("Remove", role: .destructive) { withAnimation(reduce ? nil : Motion.arrive) { store.remove(key.id) } }
+                    .glassButton(tint: DS.Palette.criticalText)
             }
             .controlSize(.small)
             .buttonBorderShape(.capsule)
@@ -408,7 +415,7 @@ struct DetailsList: View {
 
     private func row(_ label: String, _ value: String, mono: Bool = false) -> some View {
         GridRow {
-            Text(label).font(DS.Text.meta).foregroundStyle(DS.Palette.tertiary)
+            Text(label).font(DS.Text.meta).foregroundStyle(DS.Palette.meta)
             Text(value).font(mono ? .system(size: 11, design: .monospaced) : DS.Text.meta)
                 .foregroundStyle(DS.Palette.label)
                 .fixedSize(horizontal: false, vertical: true)
@@ -421,7 +428,7 @@ struct DetailsList: View {
                 Text(name).font(DS.Text.meta.weight(.medium))
                 Spacer()
                 Text(value).font(DS.Text.meta).monospacedDigit()
-                if let reset { Text("· \(Fmt.clock(reset))").font(DS.Text.meta).foregroundStyle(DS.Palette.tertiary) }
+                if let reset { Text("· \(Fmt.clock(reset))").font(DS.Text.meta).foregroundStyle(DS.Palette.meta) }
             }
             MeterBar(fraction: fraction, color: MeterBar.color(for: fraction))
         }

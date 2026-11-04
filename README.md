@@ -105,7 +105,9 @@ Unfamiliar key format? You pick the provider, or tap **Test with all providers**
 
 ## ✨ Feels premium
 
-Liquid Glass panel · cursor-following glow · cards that tilt and spring back · rolling numbers · live countdowns · light and dark mode · respects **Reduce Motion**.
+Liquid Glass panel · cursor-following light · a hero card that leans toward your pointer · rolling numbers · live countdowns · readable candy-pink accent shared with [Gautham's Clipboard](https://github.com/GauthamWho/gs-clipboard) · light and dark mode · respects **Reduce Motion**.
+
+**Keyboard:** ↩ copies the recommended key (Touch ID) · ⌘R checks all keys · ⌘N adds a key · ⌘Q quits.
 
 ---
 

@@ -7,7 +7,7 @@
 <style>
 :root{
   --label:#1d1d1f; --label2:#6e6e73; --label3:#a1a1a6; --sep:rgba(0,0,0,.08); --fill:rgba(0,0,0,.04);
-  --tint:#5856d6; --pos:#28a745; --cau:#e08a00; --crit:#e5484d;
+  --tint:#CC1A73; --pos:#28a745; --cau:#e08a00; --crit:#e5484d;
   --page:#f5f5f7; --wall1:#c9d6ff; --wall2:#f3d9e9; --wall3:#e2f0e9;
   --glass:rgba(255,255,255,.62); --glassEdge:rgba(255,255,255,.75);
   --r-tile:7px; --r-row:10px; --r-card:16px; --r-panel:20px;
@@ -15,7 +15,7 @@
 }
 @media (prefers-color-scheme:dark){:root{
   --label:#f5f5f7; --label2:#a1a1a6; --label3:#6e6e73; --sep:rgba(255,255,255,.09); --fill:rgba(255,255,255,.05);
-  --tint:#7d7aff; --pos:#32d74b; --cau:#ffb340; --crit:#ff6961;
+  --tint:#FF70B3; --pos:#32d74b; --cau:#ffb340; --crit:#ff6961;
   --page:#0d0d0f; --wall1:#1d2340; --wall2:#3a1f33; --wall3:#14302a;
   --glass:rgba(40,40,46,.55); --glassEdge:rgba(255,255,255,.12); color-scheme:dark;
 }}
@@ -103,7 +103,7 @@ code{font:11px ui-monospace,"SF Mono",monospace;color:var(--label2)}
   <p class="d">Five rules every screen follows.</p>
   <div class="grid g3 pr">
     <div class="card"><b>Light, not loud</b><span>Regular and medium weights only. Bold is never used. Big numbers are light.</span></div>
-    <div class="card"><b>One tint</b><span>Indigo marks what you can press. Green, amber and red appear only for status.</span></div>
+    <div class="card"><b>One tint</b><span>Candy pink (shared with Gautham's Clipboard) marks what you can press. Green, amber and red appear only for status.</span></div>
     <div class="card"><b>Tone before colour</b><span>Primary, secondary and tertiary grey carry the hierarchy. Colour is rare, so it means something.</span></div>
     <div class="card"><b>8-point rhythm</b><span>Every gap is 4, 8, 12, 16 or 20. Rows are 40 high. No orphan space, no crowding.</span></div>
     <div class="card"><b>Native material</b><span>System Liquid Glass and semantic colours, so dark mode and Increase Contrast just work.</span></div>
@@ -117,7 +117,7 @@ code{font:11px ui-monospace,"SF Mono",monospace;color:var(--label2)}
     <div class="sw"><span class="chip" style="background:var(--label)"></span><div><b>Label</b><div class="meta">Names, figures · <code>labelColor</code></div></div></div>
     <div class="sw"><span class="chip" style="background:var(--label2)"></span><div><b>Secondary</b><div class="meta">Meta lines, notes · <code>secondaryLabelColor</code></div></div></div>
     <div class="sw"><span class="chip" style="background:var(--label3)"></span><div><b>Tertiary</b><div class="meta">Section labels, chevrons · <code>tertiaryLabelColor</code></div></div></div>
-    <div class="sw"><span class="chip" style="background:var(--tint)"></span><div><b>Tint · Indigo</b><div class="meta">Buttons, mark, focus · <code>systemIndigo</code></div></div></div>
+    <div class="sw"><span class="chip" style="background:var(--tint)"></span><div><b>Tint · Candy pink</b><div class="meta">Buttons, focus · <code>#FF70B3 / #CC1A73</code>, fills <code>#CC1A73</code></div></div></div>
     <div class="sw"><span class="chip" style="background:var(--pos)"></span><div><b>Positive</b><div class="meta">Healthy, best pick · <code>systemGreen</code></div></div></div>
     <div class="sw"><span class="chip" style="background:var(--cau)"></span><div><b>Caution</b><div class="meta">Running low · <code>systemOrange</code></div></div></div>
     <div class="sw"><span class="chip" style="background:var(--crit)"></span><div><b>Critical</b><div class="meta">Empty, rejected · <code>systemRed</code></div></div></div>

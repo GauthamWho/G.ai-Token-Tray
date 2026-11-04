@@ -11,7 +11,23 @@ enum DS {
         static let tertiary = Color(nsColor: .tertiaryLabelColor)
         static let separator = Color(nsColor: .separatorColor)
         static let fill = Color.primary.opacity(0.045)
-        static let tint = Color(nsColor: .systemIndigo)
+        /// Candy pink, shared with Gautham's Clipboard. Bright on dark glass, deeper on light glass,
+        /// so text and buttons stay readable (≥4.5:1).
+        static let tint = Color(nsColor: NSColor(name: "tint") { a in
+            a.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                ? NSColor(srgbRed: 1.0, green: 0.44, blue: 0.70, alpha: 1)   // #FF70B3
+                : NSColor(srgbRed: 0.80, green: 0.10, blue: 0.45, alpha: 1)  // #CC1A73
+        })
+        /// Fill for prominent buttons: deep pink in both modes so white labels read (≈5.4:1).
+        static let tintFill = Color(red: 0.80, green: 0.10, blue: 0.45)
+        /// Error text that stays readable on light glass.
+        static let criticalText = Color(nsColor: NSColor(name: "criticalText") { a in
+            a.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? .systemRed : NSColor(srgbRed: 0.78, green: 0.06, blue: 0.18, alpha: 1)
+        })
+        /// Quiet but readable text (overlines, times, hints): ≥4.5:1, unlike tertiary grey.
+        static let meta = Color(nsColor: NSColor(name: "meta") { a in
+            a.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? NSColor(white: 1, alpha: 0.56) : NSColor(srgbRed: 0.36, green: 0.36, blue: 0.38, alpha: 1)
+        })
         static let positive = Color(nsColor: .systemGreen)
         static let caution = Color(nsColor: .systemOrange)
         static let critical = Color(nsColor: .systemRed)
@@ -37,7 +53,7 @@ enum DS {
 
     /// Hierarchy from size and tone. Regular, medium and light only; never bold.
     enum Text {
-        static let heroFigure = Font.system(size: 30, weight: .light, design: .rounded)
+        static let heroFigure = Font.system(size: 35, weight: .light, design: .rounded)
         static let title = Font.system(size: 15, weight: .medium)
         static let name = Font.system(size: 13, weight: .medium)
         static let figure = Font.system(size: 13, weight: .medium, design: .rounded)
@@ -55,7 +71,7 @@ struct Overline: View {
     let text: String
     init(_ text: String) { self.text = text }
     var body: some View {
-        Text(text.uppercased()).font(DS.Text.overline).tracking(0.7).foregroundStyle(DS.Palette.tertiary)
+        Text(text.uppercased()).font(DS.Text.overline).tracking(0.7).foregroundStyle(DS.Palette.meta)
     }
 }
 
@@ -66,7 +82,7 @@ struct StatusLabel: View {
     var body: some View {
         HStack(spacing: 6) {
             Circle().fill(DS.Palette.status(health)).frame(width: 6, height: 6)
-            if let text { Text(text).font(DS.Text.meta).foregroundStyle(DS.Palette.secondary) }
+            if let text { Text(text).font(DS.Text.meta).foregroundStyle(DS.Palette.meta) }
         }
     }
     static func word(_ h: Health) -> String {
@@ -84,7 +100,9 @@ struct ProviderTile: View {
         let c = provider.color
         Text(provider.initials)
             .font(.system(size: size * 0.38, weight: .semibold, design: .rounded))
-            .foregroundStyle(scheme == .dark ? Color(nsColor: NSColor(c).blended(withFraction: 0.45, of: .white) ?? NSColor(c)) : c)
+            .foregroundStyle(Color(nsColor: scheme == .dark
+                ? (NSColor(c).blended(withFraction: 0.45, of: .white) ?? NSColor(c))
+                : (NSColor(c).blended(withFraction: 0.38, of: .black) ?? NSColor(c))))
             .frame(width: size, height: size)
             .background(c.opacity(scheme == .dark ? 0.22 : 0.13),
                         in: RoundedRectangle(cornerRadius: size * 0.27, style: .continuous))

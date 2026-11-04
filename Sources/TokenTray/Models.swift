@@ -13,7 +13,7 @@ enum Provider: String, Codable, CaseIterable {
         switch self {
         case .openRouter: Info(name: "OpenRouter", initials: "OR", hex: 0x6467F2, prefixes: ["sk-or-"])
         case .deepSeek: Info(name: "DeepSeek", initials: "DS", hex: 0x4D6BFE, prefixes: [])
-        case .gemini: Info(name: "Google Gemini", initials: "G", hex: 0x3B78E7, prefixes: ["AIza", "AQ."])
+        case .gemini: Info(name: "Google Gemini", initials: "GM", hex: 0x3B78E7, prefixes: ["AIza", "AQ."])
         case .groq: Info(name: "Groq", initials: "GQ", hex: 0xF55036, prefixes: ["gsk_"])
         case .openAI: Info(name: "OpenAI", initials: "OA", hex: 0x10A37F, prefixes: ["sk-proj-", "sk-svcacct-", "sk-admin-"])
         case .anthropic: Info(name: "Anthropic", initials: "AN", hex: 0xC96442, prefixes: ["sk-ant-"])

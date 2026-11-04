@@ -66,7 +66,7 @@ struct TiltAndFling: ViewModifier {
                                        height: (p.y / max(size.height, 1) - 0.5) * 2)
                         withAnimation(.interactiveSpring(response: 0.25, dampingFraction: 0.8)) { tilt = t }
                     case .ended:
-                        withAnimation(.spring(response: 0.6, dampingFraction: 0.55)) { tilt = .zero }
+                        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) { tilt = .zero }
                     }
                 }
                 .simultaneousGesture(
@@ -79,7 +79,7 @@ struct TiltAndFling: ViewModifier {
                         }
                         .onEnded { v in
                             let speed = hypot(v.velocity.width, v.velocity.height)
-                            let bounce = min(0.45, 0.2 + speed / 6000)
+                            let bounce = min(0.2, 0.1 + speed / 12000)
                             withAnimation(.spring(duration: 0.55, bounce: bounce)) { drag = .zero; pressed = false }
                             if speed > 800 { Motion.tap() }
                         }
@@ -115,7 +115,7 @@ struct Magnetic: ViewModifier {
                                        height: (p.y / max(size.height, 1) - 0.5) * 2 * pull)
                         withAnimation(.interactiveSpring(response: 0.22, dampingFraction: 0.7)) { offset = o; hovering = true }
                     case .ended:
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.5)) { offset = .zero; hovering = false }
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { offset = .zero; hovering = false }
                     }
                 }
     }
