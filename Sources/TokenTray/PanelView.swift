@@ -1,4 +1,4 @@
-// G.AI TokenTray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved. See LICENSE.
+// G.ai Token Tray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved. See LICENSE.
 import SwiftUI
 
 /// The menu bar popover, built only from DS tokens. Layout reference: stylesheet.html, "Panel, assembled".

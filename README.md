@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="docs/readme/logo.png" width="120" alt="G.AI TokenTray logo">
+<img src="docs/readme/logo.png" width="120" alt="G.ai Token Tray logo">
 
-# G.AI TokenTray
+# G.ai Token Tray
 
 **Which AI key should I use right now?**
 A tiny Mac menu bar app by **GauthamWho**.
@@ -14,7 +14,7 @@ A tiny Mac menu bar app by **GauthamWho**.
 
 <br><br>
 
-<img src="docs/readme/hero.svg" width="100%" alt="G.AI TokenTray: the best AI key right now, with credit left and reset countdowns">
+<img src="docs/readme/hero.svg" width="100%" alt="G.ai Token Tray: the best AI key right now, with credit left and reset countdowns">
 
 </div>
 
@@ -25,7 +25,7 @@ A tiny Mac menu bar app by **GauthamWho**.
 <img src="docs/readme/problem.svg" width="100%" alt="Without: errors and guessing. With: one glance shows the best key">
 
 > You use free and paid AI keys. One runs out mid-task. Which one still has credit? When does the other come back?
-> **G.AI TokenTray answers that in one glance, from your menu bar.**
+> **G.ai Token Tray answers that in one glance, from your menu bar.**
 
 ---
 
@@ -59,11 +59,11 @@ A tiny Mac menu bar app by **GauthamWho**.
 <img src="docs/readme/install.svg" width="100%" alt="1 get the code, 2 build and open, 3 click the G in the menu bar">
 
 ```bash
-git clone https://github.com/GauthamWho/TokenTray.git
+git clone https://github.com/GauthamWho/G.ai-Token-Tray.git
 ```
 
 ```bash
-cd TokenTray && ./build.sh --open
+cd G.ai-Token-Tray && ./build.sh --open
 ```
 
 Needs a Mac on **macOS 14+** with **Xcode** installed. Liquid Glass shows on macOS 26.
@@ -121,7 +121,7 @@ I kept hitting "free usage limit reached" in the middle of work, then guessing w
 
 <div align="center">
 
-[![Open an issue](https://img.shields.io/badge/💬%20Suggest%20an%20improvement-Open%20an%20issue-1F6BFF?style=for-the-badge)](https://github.com/GauthamWho/TokenTray/issues/new)
+[![Open an issue](https://img.shields.io/badge/💬%20Suggest%20an%20improvement-Open%20an%20issue-1F6BFF?style=for-the-badge)](https://github.com/GauthamWho/G.ai-Token-Tray/issues/new)
 &nbsp;
 [![GauthamWho on GitHub](https://img.shields.io/badge/GitHub-GauthamWho-1d1d1f?style=for-the-badge&logo=github)](https://github.com/GauthamWho)
 

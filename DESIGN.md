@@ -1,4 +1,4 @@
-# TokenTray design system: "Quiet instrument"
+# G.ai Token Tray design system: "Quiet instrument"
 
 Visual reference: `tokentray-design/stylesheet.html`. Code: `Sources/TokenTray/DesignSystem.swift` (`DS`). Every view reads tokens from `DS`; no raw sizes or colours in views.
 

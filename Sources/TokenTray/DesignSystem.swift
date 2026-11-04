@@ -1,4 +1,4 @@
-// G.AI TokenTray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved. See LICENSE.
+// G.ai Token Tray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved. See LICENSE.
 import SwiftUI
 import AppKit
 
@@ -115,7 +115,7 @@ struct MeterBar: View {
     }
 }
 
-// MARK: - Brand mark: G.AI TokenTray by GauthamWho
+// MARK: - Brand mark: G.ai Token Tray by GauthamWho
 
 /// The "G": a ring opened at the top right (the allowance), a crossbar like a gauge needle,
 /// and a dot at the tip (where you are). Drawn on a 24-point grid.
@@ -138,7 +138,7 @@ enum Brand {
     static let blue = Color(red: 0.12, green: 0.42, blue: 1.0)      // #1F6BFF
     static let deep = Color(red: 0.04, green: 0.24, blue: 0.80)     // #0A3DCC
     static let sky = Color(red: 0.56, green: 0.80, blue: 1.0)       // #8FCCFF
-    static let name = "G.AI TokenTray"
+    static let name = "G.ai Token Tray"
     static let maker = "GauthamWho"
 }
 

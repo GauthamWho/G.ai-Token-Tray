@@ -24,7 +24,7 @@
     <text x="64" y="44" font-size="18" font-weight="600" fill="#1d1d1f">Get the code</text>
     <rect x="20" y="78" width="320" height="120" rx="12" fill="#1c1c1e"/>
     <g font-family="ui-monospace,'SF Mono',Menlo,monospace" font-size="13">
-      <g transform="translate(36 112)" clip-path="url(#t1)"><text fill="#e5e5ea">git clone github.com/GauthamWho/</text><text y="22" fill="#e5e5ea">TokenTray &amp;&amp; cd TokenTray</text></g>
+      <g transform="translate(36 112)" clip-path="url(#t1)"><text fill="#e5e5ea">git clone github.com/GauthamWho/</text><text y="22" fill="#e5e5ea">G.ai-Token-Tray &amp;&amp; cd G.ai-Token-Tray</text></g>
       <text x="36" y="176" fill="#32d74b" class="ok">✓ Cloned</text>
     </g>
     <text x="20" y="232" font-size="14" fill="#6e6e73">Needs a Mac with Xcode installed.</text>
@@ -38,7 +38,7 @@
     <g font-family="ui-monospace,'SF Mono',Menlo,monospace" font-size="13">
       <g transform="translate(36 112)" clip-path="url(#t2)"><text fill="#e5e5ea">./build.sh --open</text></g>
       <text x="36" y="144" fill="#8e8e93" class="ok">Build complete!</text>
-      <text x="36" y="176" fill="#32d74b" class="ok">✓ G.AI TokenTray.app</text>
+      <text x="36" y="176" fill="#32d74b" class="ok">✓ G.ai Token Tray.app</text>
     </g>
     <text x="20" y="232" font-size="14" fill="#6e6e73">One command. About 20 seconds.</text>
   </g>

@@ -1,4 +1,4 @@
-# TokenTray
+# G.ai Token Tray
 
 ## What it is
 A macOS menu bar app that answers one question at a glance: **which AI key should I use right now, and when do the others come back?** It tracks every API key and AI plan the user owns: money or tokens left, every limit window (per minute, per day, 5-hour session, weekly, credit), reset times, and how long the balance lasts at the current pace.

@@ -1,10 +1,10 @@
 #!/bin/sh
-# G.AI TokenTray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved.
-# Builds "build/G.AI TokenTray.app". Usage: ./build.sh [--open]
+# G.ai Token Tray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved.
+# Builds "build/G.ai Token Tray.app". Usage: ./build.sh [--open]
 set -e
 cd "$(dirname "$0")"
 swift build -c release
-APP="build/G.AI TokenTray.app"
+APP="build/G.ai Token Tray.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp .build/release/TokenTray "$APP/Contents/MacOS/TokenTray"

@@ -29,7 +29,7 @@
     </g>
   </g>
 
-  <text x="68" y="282" font-size="54" font-weight="600" fill="#fff" letter-spacing="-1.2">G.AI TokenTray</text>
+  <text x="68" y="282" font-size="54" font-weight="600" fill="#fff" letter-spacing="-1.2">G.ai Token Tray</text>
   <text x="70" y="326" font-size="24" fill="#DCE8FF">Which AI key should I use right now?</text>
   <g>
     <rect x="68" y="352" width="196" height="34" rx="17" fill="#ffffff" fill-opacity=".14" stroke="#fff" stroke-opacity=".25"/>
@@ -48,7 +48,7 @@
   <g filter="url(#sh)">
     <rect x="660" y="50" width="420" height="340" rx="24" fill="#fff"/>
     <g transform="translate(684 72)"><rect width="22" height="22" rx="6" fill="url(#sq)"/><use href="#G" x="2.6" y="2.6" width="16.8" height="16.8"/></g>
-    <text x="716" y="89" font-size="16" font-weight="500" fill="#1d1d1f">G.AI TokenTray</text>
+    <text x="716" y="89" font-size="16" font-weight="500" fill="#1d1d1f">G.ai Token Tray</text>
     <text x="1056" y="89" font-size="13" fill="#a1a1a6" text-anchor="end">Updated 12s ago</text>
     <rect x="684" y="110" width="372" height="150" rx="18" fill="#E9F6EC"/>
     <text x="704" y="138" font-size="12" font-weight="600" fill="#8e8e93" letter-spacing="1">BEST RIGHT NOW</text>

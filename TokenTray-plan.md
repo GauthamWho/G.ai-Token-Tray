@@ -1,4 +1,4 @@
-# TokenTray — Mac menu bar app that tracks API key usage
+# G.ai Token Tray — Mac menu bar app that tracks API key usage
 
 Working name: **TokenTray**. Lives in the macOS menu bar (top-right, next to the clock), with an optional live number like `28%` beside the icon.
 Answers four questions for every API key: **How much did I use? How much is left? How fast am I burning it? When will it run out?**
@@ -59,7 +59,7 @@ Each key card shows a small badge saying which source it uses: `Exact` / `Admin`
   - **LOCKED look: L11 "Compact"** (picked 2026-11-04, Round 3 tab): white popover, 12 px Geist/SF type, tight 7×12 px rows, 10 px corners, indigo accent `#5b5bd6`, green `#1e8e3e` / amber `#b25e00` / red `#c4281c` for status, light grey lines `#eceef1`. Menu bar shows **icon only**, tinted by the worst status. Fits more keys without scrolling. Dark mode = same layout with dark surfaces.
 
   Earlier idea for the panel (kept for the detail window):
-- Header: "TokenTray" · total spent today across all keys · refresh button · last-updated time.
+- Header: "G.ai Token Tray" · total spent today across all keys · refresh button · last-updated time.
 - List of **key cards**, sorted by "runs out soonest":
   - Provider logo + nickname + masked key (`sk-or-…8f2a`) + source badge.
   - Big number: **remaining** ($ or tokens).

@@ -46,13 +46,13 @@
   <g class="arrow"><circle cx="608" cy="270" r="24" fill="#1F6BFF"/><path d="M598 270h18m-7-8 8 8-8 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
 
   <!-- WITH -->
-  <text x="660" y="64" font-size="15" font-weight="600" fill="#1F6BFF" letter-spacing="1.5">WITH G.AI TOKENTRAY</text>
+  <text x="660" y="64" font-size="15" font-weight="600" fill="#1F6BFF" letter-spacing="1.5">WITH G.ai TOKEN TRAY</text>
   <text x="660" y="94" font-size="26" font-weight="600" fill="#1d1d1f">One glance, keep going</text>
   <g filter="url(#sh)">
     <rect x="660" y="120" width="480" height="300" rx="20" fill="#fff"/>
     <rect x="684" y="142" width="20" height="20" rx="6" fill="url(#sq)"/>
     <use href="#G" x="686.4" y="144.4" width="15.2" height="15.2"/>
-    <text x="714" y="157" font-size="15" font-weight="500" fill="#1d1d1f">G.AI TokenTray</text>
+    <text x="714" y="157" font-size="15" font-weight="500" fill="#1d1d1f">G.ai Token Tray</text>
     <rect x="684" y="176" width="432" height="128" rx="16" fill="#E9F6EC"/>
     <text x="704" y="202" font-size="12" font-weight="600" fill="#8e8e93" letter-spacing="1">BEST RIGHT NOW</text>
     <text x="704" y="234" font-size="20" font-weight="500" fill="#1d1d1f">Work OpenRouter</text>

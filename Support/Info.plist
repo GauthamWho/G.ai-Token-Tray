@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key><string>com.gauthamwho.gai-tokentray</string>
-    <key>CFBundleName</key><string>G.AI TokenTray</string>
-    <key>CFBundleDisplayName</key><string>G.AI TokenTray</string>
+    <key>CFBundleName</key><string>G.ai Token Tray</string>
+    <key>CFBundleDisplayName</key><string>G.ai Token Tray</string>
     <key>CFBundleExecutable</key><string>TokenTray</string>
     <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>CFBundlePackageType</key><string>APPL</string>
