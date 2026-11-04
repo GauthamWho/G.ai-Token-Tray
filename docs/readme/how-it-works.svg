@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" font-family="-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Helvetica,Arial,sans-serif">
+  <defs>
+    <linearGradient id="sq" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2A74FF"/><stop offset="1" stop-color="#0A3DCC"/></linearGradient>
+    <symbol id="G" viewBox="0 0 24 24"><path d="M17.09 6.91A7.2 7.2 0 1 0 19.2 12H12.6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17.1" cy="6.9" r="2.1" fill="#8FCCFF"/></symbol>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0a3dcc" flood-opacity=".18"/></filter>
+    <style>
+      .n{transform-box:fill-box;transform-origin:center;animation:n 7.5s infinite}
+      .n1{animation-delay:0s}.n2{animation-delay:1.5s}.n3{animation-delay:3s}.n4{animation-delay:4.5s}.n5{animation-delay:6s}
+      @keyframes n{0%,100%{transform:scale(1)}4%{transform:scale(1.08)}10%{transform:scale(1)}}
+      .ring{fill:none;stroke:#1F6BFF;stroke-width:3;opacity:0;transform-box:fill-box;transform-origin:center;animation:ring 7.5s infinite}
+      .r1{animation-delay:0s}.r2{animation-delay:1.5s}.r3{animation-delay:3s}.r4{animation-delay:4.5s}.r5{animation-delay:6s}
+      @keyframes ring{0%{opacity:.7;transform:scale(1)}12%{opacity:0;transform:scale(1.5)}100%{opacity:0}}
+    </style>
+  </defs>
+  <rect width="1200" height="340" rx="28" fill="#F5F6F8"/>
+  <text x="600" y="54" font-size="15" font-weight="600" fill="#1F6BFF" letter-spacing="1.5" text-anchor="middle">HOW IT WORKS</text>
+
+  <path id="track" d="M150 170 H1050" stroke="#d7dbe3" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/>
+  <circle r="8" fill="#1F6BFF"><animateMotion dur="7.5s" repeatCount="indefinite" path="M150 170 H1050" keyPoints="0;0.25;0.5;0.75;1;1" keyTimes="0;0.2;0.4;0.6;0.8;1" calcMode="spline" keySplines=".65 0 .35 1;.65 0 .35 1;.65 0 .35 1;.65 0 .35 1;0 0 1 1"/></circle>
+
+  <!-- 1 paste -->
+  <g transform="translate(150 170)">
+    <circle class="ring r1" r="46"/>
+    <g class="n n1" filter="url(#sh)"><circle r="46" fill="#fff"/>
+      <g fill="none" stroke="#1F6BFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="-8" cy="6" r="9"/><path d="M-1.5 -0.5 14 -16M8 -10l5 5M3 -5l4 4"/></g></g>
+    <text y="82" font-size="17" font-weight="600" fill="#1d1d1f" text-anchor="middle">Paste a key</text>
+    <text y="104" font-size="14" fill="#6e6e73" text-anchor="middle">once</text>
+  </g>
+  <!-- 2 keychain -->
+  <g transform="translate(375 170)">
+    <circle class="ring r2" r="46"/>
+    <g class="n n2" filter="url(#sh)"><circle r="46" fill="#fff"/>
+      <g fill="none" stroke="#1F6BFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><rect x="-13" y="-3" width="26" height="20" rx="4"/><path d="M-8 -3v-6a8 8 0 0 1 16 0v6"/><circle cx="0" cy="7" r="1.5" fill="#1F6BFF"/></g></g>
+    <text y="82" font-size="17" font-weight="600" fill="#1d1d1f" text-anchor="middle">Locked in Keychain</text>
+    <text y="104" font-size="14" fill="#6e6e73" text-anchor="middle">never plain text</text>
+  </g>
+  <!-- 3 ask provider -->
+  <g transform="translate(600 170)">
+    <circle class="ring r3" r="46"/>
+    <g class="n n3" filter="url(#sh)"><circle r="46" fill="#fff"/>
+      <g fill="none" stroke="#1F6BFF" stroke-width="3.2" stroke-linecap="round"><circle r="16"/><path d="M-16 0h32M0 -16c-8 9-8 23 0 32M0 -16c8 9 8 23 0 32"/></g></g>
+    <text y="82" font-size="17" font-weight="600" fill="#1d1d1f" text-anchor="middle">Ask its provider</text>
+    <text y="104" font-size="14" fill="#6e6e73" text-anchor="middle">credit · limits · resets</text>
+  </g>
+  <!-- 4 advisor -->
+  <g transform="translate(825 170)">
+    <circle class="ring r4" r="46"/>
+    <g class="n n4" filter="url(#sh)"><circle r="46" fill="#fff"/>
+      <path d="M0 -17l5 10.5 11.5 1.6-8.3 8 2 11.4L0 9.1l-10.2 5.4 2-11.4-8.3-8L-5 -6.5z" fill="none" stroke="#1F6BFF" stroke-width="3" stroke-linejoin="round"/></g>
+    <text y="82" font-size="17" font-weight="600" fill="#1d1d1f" text-anchor="middle">Pick the best key</text>
+    <text y="104" font-size="14" fill="#6e6e73" text-anchor="middle">most room, longest runway</text>
+  </g>
+  <!-- 5 menu bar -->
+  <g transform="translate(1050 170)">
+    <circle class="ring r5" r="46"/>
+    <g class="n n5" filter="url(#sh)"><circle r="46" fill="#fff"/>
+      <rect x="-20" y="-20" width="40" height="40" rx="11" fill="url(#sq)"/><use href="#G" x="-15.2" y="-15.2" width="30.4" height="30.4"/></g>
+    <text y="82" font-size="17" font-weight="600" fill="#1d1d1f" text-anchor="middle">Glance at menu bar</text>
+    <text y="104" font-size="14" fill="#6e6e73" text-anchor="middle">every 5 minutes</text>
+  </g>
+</svg>

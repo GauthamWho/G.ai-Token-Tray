@@ -1,3 +1,4 @@
+// G.AI TokenTray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved. See LICENSE.
 import SwiftUI
 
 /// `TokenTray --snapshot <dir>` renders the real panel with sample keys to PNGs (light + dark), then exits.
@@ -92,7 +93,81 @@ enum PanelSnapshot {
         }
     }
 
+    /// `TOKENTRAY_NO_GLASS=1 TokenTray --readme-assets <dir>` renders the brand icon set,
+    /// panel screenshots and add-key animation frames used in the README.
+    @MainActor static func readmeAssetsIfRequested() {
+        let args = CommandLine.arguments
+        guard let i = args.firstIndex(of: "--readme-assets"), i + 1 < args.count else { return }
+        let dir = URL(fileURLWithPath: args[i + 1], isDirectory: true)
+        let fm = FileManager.default
+        try? fm.createDirectory(at: dir.appendingPathComponent("AppIcon.iconset"), withIntermediateDirectories: true)
+        try? fm.createDirectory(at: dir.appendingPathComponent("frames"), withIntermediateDirectories: true)
+
+        func save<V: View>(_ v: V, _ path: String, scale: CGFloat = 2) {
+            let r = ImageRenderer(content: v.environment(\.stillRender, true)); r.scale = scale
+            guard let img = r.nsImage, let t = img.tiffRepresentation,
+                  let png = NSBitmapImageRep(data: t)?.representation(using: .png, properties: [:]) else { return }
+            try? png.write(to: dir.appendingPathComponent(path))
+        }
+
+        // App icon: macOS squircle with breathing room, at every iconset size.
+        let icon = { (px: CGFloat) in
+            AppMark(size: px * 0.8).shadow(color: .black.opacity(0.25), radius: px * 0.02, y: px * 0.015)
+                .frame(width: px, height: px)
+        }
+        for (pt, scales) in [(16, [1, 2]), (32, [1, 2]), (128, [1, 2]), (256, [1, 2]), (512, [1, 2])] {
+            for sc in scales {
+                let name = sc == 1 ? "icon_\(pt)x\(pt).png" : "icon_\(pt)x\(pt)@2x.png"
+                save(icon(CGFloat(pt)), "AppIcon.iconset/\(name)", scale: CGFloat(sc))
+            }
+        }
+        save(icon(512), "logo-1024.png")
+
+        // Panel screenshots on a window-like card.
+        let store = Store(demo: sample())
+        for scheme in [ColorScheme.light, .dark] {
+            let card = PanelView().environmentObject(store).environment(\.colorScheme, scheme)
+                .background(scheme == .dark ? Color(white: 0.13) : Color(white: 0.985))
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5))
+                .shadow(color: .black.opacity(0.18), radius: 18, y: 10)
+                .padding(28)
+                .environment(\.colorScheme, scheme)
+            save(card, "panel-\(scheme == .dark ? "dark" : "light").png")
+        }
+
+        // Add-key animation frames: paste → scan lights up → result.
+        let addStore = Store(demo: sample())
+        let rec = addStore.keys[0]
+        // An OpenRouter key is checked only with OpenRouter (no key goes elsewhere without consent).
+        var phases: [AddKeyView.Phase] = [.entry, .entry, .entry, .scanning(tried: []), .scanning(tried: [.openRouter]), .scanning(tried: [.openRouter])]
+        phases += Array(repeating: .done(rec, byTesting: false), count: 6)
+        for (n, ph) in phases.enumerated() {
+            let win = VStack(spacing: 0) {
+                HStack(spacing: 7) {
+                    ForEach([Color(red: 1, green: 0.37, blue: 0.34), Color(red: 1, green: 0.74, blue: 0.18), Color(red: 0.16, green: 0.78, blue: 0.25)], id: \.self) {
+                        Circle().fill($0).frame(width: 11, height: 11)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 14).padding(.top, 12)
+                AddKeyView(close: {}, phase: ph, secret: n == 0 ? "" : "sk-or-v1-a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4")
+                    .environmentObject(addStore)
+            }
+            .frame(width: 420, height: 430, alignment: .top)
+            .background(Color(white: 0.975))
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(Color.black.opacity(0.1), lineWidth: 0.5))
+            .shadow(color: .black.opacity(0.18), radius: 16, y: 8)
+            .padding(24)
+            .environment(\.colorScheme, .light)
+            save(win, String(format: "frames/add-%02d.png", n))
+        }
+        exit(0)
+    }
+
     @MainActor static func runIfRequested() {
+        readmeAssetsIfRequested()
         selfTestIfRequested()
         previewIfRequested()
         let args = CommandLine.arguments
@@ -132,6 +207,12 @@ enum PanelSnapshot {
         s[capped.id] = KeyStatus(remaining: 0, total: 5, resetAt: Date().addingTimeInterval(6480),
                                  resetLabel: "daily spend cap resets", health: .blocked, note: "No credit left. Free models still work.")
         s[old.id] = KeyStatus(health: .error, note: FetchError.rejected.message)
-        return ([work, ds, capped, old], s, [])
+        let gem = rec("Gemini", .gemini, "AIza…91kD")
+        let groq = rec("Groq free", .groq, "gsk_…m2Pz")
+        s[gem.id] = KeyStatus(health: .ok, note: "Key works. Google doesn't share usage or credit.",
+                              details: [["Models available", "48"], ["Newest Gemini model", "gemini-3.8-flash"]])
+        s[groq.id] = KeyStatus(health: .ok, limits: [LimitWindow(name: "requests today", remaining: 120, limit: 1000,
+                                                                   resetAt: Date().addingTimeInterval(25900))])
+        return ([work, ds, gem, groq, capped, old], s, [])
     }
 }

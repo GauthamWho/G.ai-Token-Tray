@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="380" viewBox="0 0 1200 380" font-family="-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Helvetica,Arial,sans-serif">
+  <defs>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity=".1"/></filter>
+    <style>
+      .t{transform-box:fill-box;transform-origin:center;animation:t 3.2s ease-in-out infinite}
+      @keyframes t{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+      .meter{animation:m 3s ease-in-out infinite alternate}
+      @keyframes m{from{width:150px}to{width:40px}}
+      .tick{animation:tk 1s steps(2) infinite}
+      @keyframes tk{50%{opacity:.4}}
+    </style>
+  </defs>
+  <rect width="1200" height="380" rx="28" fill="#F5F6F8"/>
+  <text x="600" y="54" font-size="15" font-weight="600" fill="#1F6BFF" letter-spacing="1.5" text-anchor="middle">15 PROVIDERS · WHAT EACH ONE SHOWS</text>
+
+  <!-- column 1: exact balance -->
+  <g transform="translate(40 84)" filter="url(#sh)"><rect width="360" height="260" rx="20" fill="#fff"/></g>
+  <text x="68" y="128" font-size="18" font-weight="600" fill="#1d1d1f">Exact credit left</text>
+  <text x="68" y="152" font-size="14" fill="#6e6e73">Real balance, burn rate, days left</text>
+  <g transform="translate(68 176)">
+    <rect width="52" height="52" rx="14" fill="#6467F2" fill-opacity=".14"/><text x="26" y="32" font-size="15" font-weight="600" fill="#6467F2" text-anchor="middle">OR</text>
+    <rect x="66" width="52" height="52" rx="14" fill="#4D6BFE" fill-opacity=".14"/><text x="92" y="32" font-size="15" font-weight="600" fill="#4D6BFE" text-anchor="middle">DS</text>
+    <rect x="132" width="52" height="52" rx="14" fill="#555" fill-opacity=".12"/><text x="158" y="32" font-size="15" font-weight="600" fill="#444" text-anchor="middle">KM</text>
+    <rect x="198" width="52" height="52" rx="14" fill="#7C3AED" fill-opacity=".14"/><text x="224" y="32" font-size="15" font-weight="600" fill="#7C3AED" text-anchor="middle">SF</text>
+  </g>
+  <text x="68" y="266" font-size="12" fill="#8e8e93">OpenRouter · DeepSeek · Moonshot · SiliconFlow</text>
+  <text x="68" y="306" font-size="24" font-weight="300" fill="#1d1d1f">$18.40</text>
+  <rect x="160" y="296" width="210" height="4" rx="2" fill="#000" fill-opacity=".06"/><rect class="meter" x="160" y="296" width="150" height="4" rx="2" fill="#28a745"/>
+
+  <!-- column 2: live limits -->
+  <g transform="translate(420 84)" filter="url(#sh)"><rect width="360" height="260" rx="20" fill="#fff"/></g>
+  <text x="448" y="128" font-size="18" font-weight="600" fill="#1d1d1f">Live limits</text>
+  <text x="448" y="152" font-size="14" fill="#6e6e73">Requests and tokens left, reset clocks</text>
+  <g transform="translate(448 176)">
+    <rect width="52" height="52" rx="14" fill="#F55036" fill-opacity=".14"/><text x="26" y="32" font-size="15" font-weight="600" fill="#F55036" text-anchor="middle">GQ</text>
+    <rect x="66" width="52" height="52" rx="14" fill="#F05A28" fill-opacity=".14"/><text x="92" y="32" font-size="15" font-weight="600" fill="#F05A28" text-anchor="middle">CB</text>
+  </g>
+  <text x="448" y="266" font-size="12" fill="#8e8e93">Groq · Cerebras</text>
+  <text x="448" y="306" font-size="24" font-weight="300" fill="#1d1d1f">812<tspan font-size="14" fill="#6e6e73"> / 1000 today</tspan></text>
+  <text x="752" y="306" font-size="15" font-weight="500" fill="#1d1d1f" text-anchor="end" class="tick">7h 11m</text>
+
+  <!-- column 3: key check -->
+  <g transform="translate(800 84)" filter="url(#sh)"><rect width="360" height="260" rx="20" fill="#fff"/></g>
+  <text x="828" y="128" font-size="18" font-weight="600" fill="#1d1d1f">Key check + details</text>
+  <text x="828" y="152" font-size="14" fill="#6e6e73">They don't share balance with normal keys</text>
+  <g transform="translate(828 172)" font-size="12" font-weight="600" text-anchor="middle">
+    <rect width="40" height="40" rx="11" fill="#3B78E7" fill-opacity=".14"/><text x="20" y="25" fill="#3B78E7">G</text>
+    <rect x="48" width="40" height="40" rx="11" fill="#10A37F" fill-opacity=".14"/><text x="68" y="25" fill="#10A37F">OA</text>
+    <rect x="96" width="40" height="40" rx="11" fill="#C96442" fill-opacity=".14"/><text x="116" y="25" fill="#C96442">AN</text>
+    <rect x="144" width="40" height="40" rx="11" fill="#FA520F" fill-opacity=".14"/><text x="164" y="25" fill="#FA520F">MI</text>
+    <rect x="192" width="40" height="40" rx="11" fill="#333" fill-opacity=".12"/><text x="212" y="25" fill="#333">X</text>
+    <rect x="240" width="40" height="40" rx="11" fill="#0F6FFF" fill-opacity=".14"/><text x="260" y="25" fill="#0F6FFF">TG</text>
+    <rect y="48" width="40" height="40" rx="11" fill="#6720FF" fill-opacity=".14"/><text x="20" y="73" fill="#6720FF">FW</text>
+    <rect x="48" y="48" width="40" height="40" rx="11" fill="#D99400" fill-opacity=".16"/><text x="68" y="73" fill="#B07800">HF</text>
+    <rect x="96" y="48" width="40" height="40" rx="11" fill="#39594D" fill-opacity=".14"/><text x="116" y="73" fill="#39594D">CO</text>
+  </g>
+  <text x="828" y="290" font-size="12" fill="#8e8e93">Gemini · OpenAI · Anthropic · Mistral · xAI</text>
+  <text x="828" y="308" font-size="12" fill="#8e8e93">Together · Fireworks · Hugging Face · Cohere</text>
+  <circle cx="834" cy="328" r="4" fill="#28a745"/><text x="846" y="332" font-size="13" fill="#6e6e73">Key works · models · account</text>
+</svg>

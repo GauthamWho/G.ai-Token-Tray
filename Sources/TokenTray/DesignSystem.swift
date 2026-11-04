@@ -1,3 +1,4 @@
+// G.AI TokenTray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved. See LICENSE.
 import SwiftUI
 import AppKit
 
@@ -114,38 +115,96 @@ struct MeterBar: View {
     }
 }
 
-// MARK: - App mark
+// MARK: - Brand mark: G.AI TokenTray by GauthamWho
 
-/// The ring gauge: an open arc (the allowance), a dot where you are, and a needle.
-struct AppMarkShape: Shape {
+/// The "G": a ring opened at the top right (the allowance), a crossbar like a gauge needle,
+/// and a dot at the tip (where you are). Drawn on a 24-point grid.
+struct GLetterShape: Shape {
+    var dot = true
     func path(in r: CGRect) -> Path {
         let s = min(r.width, r.height) / 24
-        func p(_ x: CGFloat, _ y: CGFloat) -> CGPoint { CGPoint(x: r.minX + x * s, y: r.minY + y * s) }
-        var path = Path()
-        path.addArc(center: p(12, 12), radius: 8 * s, startAngle: .degrees(135), endAngle: .degrees(45), clockwise: false)
-        return path.strokedPath(StrokeStyle(lineWidth: 2.2 * s, lineCap: .round))
-            .union(Path(ellipseIn: CGRect(origin: p(16.55, 15.4), size: CGSize(width: 4.2 * s, height: 4.2 * s))))
-            .union({ var n = Path(); n.move(to: p(12, 12)); n.addLine(to: p(15.6, 8.4))
-                     return n.strokedPath(StrokeStyle(lineWidth: 2 * s, lineCap: .round)) }())
-            .union(Path(ellipseIn: CGRect(origin: p(10.4, 10.4), size: CGSize(width: 3.2 * s, height: 3.2 * s))))
+        let o = CGPoint(x: r.midX - 12 * s, y: r.midY - 12 * s)
+        func p(_ x: CGFloat, _ y: CGFloat) -> CGPoint { CGPoint(x: o.x + x * s, y: o.y + y * s) }
+        var g = Path()
+        g.addArc(center: p(12, 12), radius: 7.2 * s, startAngle: .degrees(-45), endAngle: .degrees(0), clockwise: true)
+        g.addLine(to: p(12.6, 12))
+        var out = g.strokedPath(StrokeStyle(lineWidth: 2.6 * s, lineCap: .round, lineJoin: .round))
+        if dot { out = out.union(Path(ellipseIn: CGRect(x: o.x + 15.0 * s, y: o.y + 4.8 * s, width: 4.2 * s, height: 4.2 * s))) }
+        return out
     }
 }
 
+enum Brand {
+    static let blue = Color(red: 0.12, green: 0.42, blue: 1.0)      // #1F6BFF
+    static let deep = Color(red: 0.04, green: 0.24, blue: 0.80)     // #0A3DCC
+    static let sky = Color(red: 0.56, green: 0.80, blue: 1.0)       // #8FCCFF
+    static let name = "G.AI TokenTray"
+    static let maker = "GauthamWho"
+}
+
+/// Blue squircle with the white G. Used as the app icon and the panel mark.
 struct AppMark: View {
-    var size: CGFloat = 16
-    var color: Color = DS.Palette.tint
-    var body: some View { AppMarkShape().fill(color).frame(width: size, height: size) }
+    var size: CGFloat = 18
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: size * 0.27, style: .continuous)
+                .fill(LinearGradient(colors: [Brand.blue, Brand.deep], startPoint: .topLeading, endPoint: .bottomTrailing))
+            RoundedRectangle(cornerRadius: size * 0.27, style: .continuous)
+                .strokeBorder(.white.opacity(0.22), lineWidth: max(0.5, size * 0.012))
+            GLetterShape(dot: false).fill(.white).padding(size * 0.12)
+            Circle().fill(Brand.sky)
+                .frame(width: size * 0.133, height: size * 0.133)
+                .offset(x: size * 0.1615, y: -size * 0.1615)
+        }
+        .frame(width: size, height: size)
+    }
 }
 
 extension AppMark {
-    /// Menu bar image: a template (adapts to the bar) unless a colour is given.
+    /// Menu bar: just the G. A template image (adapts to the bar) unless a status colour is given.
     @MainActor static func menuBarImage(color: NSColor?) -> NSImage {
-        let renderer = ImageRenderer(content: AppMarkShape().fill(color.map { Color(nsColor: $0) } ?? .black).frame(width: 18, height: 18))
+        let renderer = ImageRenderer(content: GLetterShape().fill(color.map { Color(nsColor: $0) } ?? .black).frame(width: 18, height: 18))
         renderer.scale = NSScreen.main?.backingScaleFactor ?? 2
         let img = renderer.nsImage ?? NSImage(systemSymbolName: "gauge.with.dots.needle.33percent", accessibilityDescription: nil)!
         img.size = NSSize(width: 18, height: 18)
         img.isTemplate = (color == nil)
-        img.accessibilityDescription = "TokenTray"
+        img.accessibilityDescription = Brand.name
         return img
+    }
+}
+
+// MARK: - Still images
+
+/// True only when rendering README stills offscreen, where AppKit-backed controls can't draw.
+private struct StillRenderKey: EnvironmentKey { static let defaultValue = false }
+extension EnvironmentValues {
+    var stillRender: Bool {
+        get { self[StillRenderKey.self] }
+        set { self[StillRenderKey.self] = newValue }
+    }
+}
+
+/// A text field that draws as plain text in still renders.
+struct FieldOrStill: View {
+    let placeholder: String
+    @Binding var text: String
+    var secure = false
+    var font: Font = DS.Text.body
+    var onSubmit: () -> Void = {}
+    @Environment(\.stillRender) private var still
+
+    var body: some View {
+        Group {
+            if still {
+                Text(text.isEmpty ? placeholder : (secure ? String(repeating: "•", count: min(text.count, 30)) : text))
+                    .foregroundStyle(text.isEmpty ? DS.Palette.tertiary : DS.Palette.label)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else if secure {
+                SecureField(placeholder, text: $text).textFieldStyle(.plain).onSubmit(onSubmit)
+            } else {
+                TextField(placeholder, text: $text).textFieldStyle(.plain).onSubmit(onSubmit)
+            }
+        }
+        .font(font)
     }
 }

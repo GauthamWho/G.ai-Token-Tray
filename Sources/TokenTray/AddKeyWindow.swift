@@ -1,3 +1,4 @@
+// G.AI TokenTray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved. See LICENSE.
 import SwiftUI
 import AppKit
 
@@ -10,7 +11,7 @@ enum AddKeyWindow {
             let w = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 420, height: 300),
                              styleMask: [.titled, .closable, .fullSizeContentView],
                              backing: .buffered, defer: false)
-            w.title = "Add API key"
+            w.title = "Add API key · \(Brand.name)"
             w.titlebarAppearsTransparent = true
             w.titleVisibility = .hidden
             w.isMovableByWindowBackground = true
@@ -40,10 +41,17 @@ struct AddKeyView: View {
     let close: () -> Void
     @State private var secret = ""
     @State private var name = ""
-    @State private var phase: Phase = .entry
+    @State private var phase: Phase
+
+    init(close: @escaping () -> Void, phase: Phase = .entry, secret: String = "") {
+        self.close = close
+        _phase = State(initialValue: phase)
+        _secret = State(initialValue: secret)
+    }
     @Namespace private var badges
     @State private var pointer: CGPoint?
     @Environment(\.accessibilityReduceMotion) private var reduce
+    @Environment(\.stillRender) private var still
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -62,7 +70,7 @@ struct AddKeyView: View {
         }
         .padding(.horizontal, 20).padding(.top, 26).padding(.bottom, 18)
         .frame(width: 420)
-        .background(WindowMaterial().ignoresSafeArea())
+        .background { if !still { WindowMaterial().ignoresSafeArea() } }
         .animation(reduce ? nil : Motion.arrive, value: phase)
     }
 
@@ -79,15 +87,12 @@ struct AddKeyView: View {
 
     private var entry: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SecureField("Paste any AI API key", text: $secret)
-                .textFieldStyle(.plain)
-                .font(DS.Text.mono)
+            FieldOrStill(placeholder: "Paste any AI API key", text: $secret, secure: true, font: DS.Text.mono) { start() }
                 .padding(10)
                 .glassCard(radius: 10)
-                .onSubmit { start() }
             Text(hint).font(DS.Text.meta).foregroundStyle(DS.Palette.secondary).contentTransition(.opacity)
-            TextField("Name (optional)", text: $name)
-                .textFieldStyle(.plain).padding(10).glassCard(radius: 10)
+            FieldOrStill(placeholder: "Name (optional)", text: $name)
+                .padding(10).glassCard(radius: 10)
             if case .failed(let why) = phase {
                 Label(why, systemImage: "exclamationmark.triangle.fill")
                     .font(DS.Text.body).foregroundStyle(DS.Palette.critical)
@@ -139,7 +144,8 @@ struct AddKeyView: View {
                 if case .active(let p) = phase { pointer = p } else { pointer = nil }
             }
             HStack(spacing: 8) {
-                ProgressView().controlSize(.small)
+                if still { Image(systemName: "circle.dotted").foregroundStyle(DS.Palette.tint) }
+                else { ProgressView().controlSize(.small) }
                 Text("Asked \(tried.count) of \(Provider.allCases.count) providers")
                     .font(DS.Text.body).foregroundStyle(DS.Palette.secondary).monospacedDigit()
                     .contentTransition(.numericText())
@@ -180,7 +186,7 @@ struct AddKeyView: View {
                     .padding(12).glassCard(radius: 12)
             }
             HStack {
-                TextField("Name", text: $name).textFieldStyle(.plain).padding(8).glassCard(radius: 8)
+                FieldOrStill(placeholder: "Name", text: $name).padding(8).glassCard(radius: 8)
                 Button("Done") {
                     store.rename(rec.id, to: name)
                     reset(); close()

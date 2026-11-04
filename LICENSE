@@ -1,0 +1,44 @@
+G.AI TokenTray — Free Use License
+
+Copyright © 2026 GauthamWho. All rights reserved.
+
+G.AI TokenTray, including its source code, design, logo, name, images, animations
+and documentation (together, the "Software"), was created by and belongs to
+GauthamWho.
+
+1. WHAT YOU MAY DO
+   You may, free of charge:
+   a. download, build and run the Software on your own computers, for personal or
+      work use;
+   b. read the source code to understand how it works or to check its security;
+   c. share a link to the official repository:
+      https://github.com/GauthamWho/TokenTray
+
+2. WHAT YOU MAY NOT DO
+   Without prior written permission from GauthamWho, you may not:
+   a. sell, rent, lease or charge for the Software or any part of it;
+   b. redistribute, publish, mirror or re-upload the Software, modified or not,
+      including in app stores, package managers or bundles;
+   c. modify, adapt, translate or build on the source code to create another
+      product, app, service or derivative work for distribution or sale;
+   d. use the source code, design or assets inside another product, whether free
+      or paid;
+   e. remove or change this license, the copyright notice, or the author credit;
+   f. use the names "G.AI TokenTray" or "GauthamWho", or the logo, to promote any
+      other product, or present the Software as your own.
+
+3. IMPROVEMENTS AND FEEDBACK
+   Ideas, bug reports and improvement requests are welcome through the issue
+   tracker of the official repository. Suggestions you send may be used by
+   GauthamWho to improve the Software without obligation to you.
+
+4. NO WARRANTY
+   The Software is provided "as is", without warranty of any kind. GauthamWho is
+   not liable for any claim, damages or other liability arising from its use,
+   including any cost, quota or charge from third-party AI providers.
+
+5. THIRD PARTIES
+   Provider names (OpenRouter, Google Gemini, Groq, OpenAI, Anthropic and others)
+   belong to their owners and are used only to describe compatibility.
+
+For permission requests, contact GauthamWho via https://github.com/GauthamWho

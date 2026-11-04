@@ -1,8 +1,10 @@
+// G.AI TokenTray by GauthamWho. Copyright © 2026 GauthamWho. All rights reserved. See LICENSE.
 import SwiftUI
 
 /// The menu bar popover, built only from DS tokens. Layout reference: stylesheet.html, "Panel, assembled".
 struct PanelView: View {
     @EnvironmentObject var store: Store
+    @Environment(\.stillRender) private var still
     @Namespace private var glass
     @State private var shown = false
     @Environment(\.accessibilityReduceMotion) private var reduce
@@ -41,7 +43,7 @@ struct PanelView: View {
     private var header: some View {
         HStack(spacing: DS.Space.s) {
             AppMark(size: 16)
-            Text("TokenTray").font(DS.Text.name)
+            Text(Brand.name).font(DS.Text.name)
             Spacer()
             TimelineView(.periodic(from: .now, by: 1)) { ctx in
                 Text(store.refreshing ? "Checking…" : store.lastRefresh.map { "Updated \(Fmt.ago($0, now: ctx.date))" } ?? "")
@@ -86,14 +88,20 @@ struct PanelView: View {
             .glassButton()
             .buttonBorderShape(.capsule)
             Spacer()
-            Menu {
-                Button("Check all keys now") { Task { await store.refresh() } }
-                Divider()
-                Button("Quit TokenTray") { NSApp.terminate(nil) }
-            } label: {
-                Image(systemName: "gearshape").font(.system(size: 13)).foregroundStyle(DS.Palette.secondary)
+            Group {
+                if still {
+                    Image(systemName: "gearshape").font(.system(size: 13)).foregroundStyle(DS.Palette.secondary)
+                } else {
+                    Menu {
+                        Button("Check all keys now") { Task { await store.refresh() } }
+                        Divider()
+                        Button("Quit \(Brand.name)") { NSApp.terminate(nil) }
+                    } label: {
+                        Image(systemName: "gearshape").font(.system(size: 13)).foregroundStyle(DS.Palette.secondary)
+                    }
+                    .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+                }
             }
-            .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
             .padding(.trailing, DS.Space.xs)
         }
         .padding(.top, DS.Space.m)
