@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TokenTray · Style sheet</title>
+<style>
+:root{
+  --label:#1d1d1f; --label2:#6e6e73; --label3:#a1a1a6; --sep:rgba(0,0,0,.08); --fill:rgba(0,0,0,.04);
+  --tint:#5856d6; --pos:#28a745; --cau:#e08a00; --crit:#e5484d;
+  --page:#f5f5f7; --wall1:#c9d6ff; --wall2:#f3d9e9; --wall3:#e2f0e9;
+  --glass:rgba(255,255,255,.62); --glassEdge:rgba(255,255,255,.75);
+  --r-tile:7px; --r-row:10px; --r-card:16px; --r-panel:20px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --label:#f5f5f7; --label2:#a1a1a6; --label3:#6e6e73; --sep:rgba(255,255,255,.09); --fill:rgba(255,255,255,.05);
+  --tint:#7d7aff; --pos:#32d74b; --cau:#ffb340; --crit:#ff6961;
+  --page:#0d0d0f; --wall1:#1d2340; --wall2:#3a1f33; --wall3:#14302a;
+  --glass:rgba(40,40,46,.55); --glassEdge:rgba(255,255,255,.12); color-scheme:dark;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--label);font:13px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:var(--tint);color:#fff}
+.rounded{font-family:ui-rounded,"SF Pro Rounded",-apple-system,sans-serif}
+.tab{font-variant-numeric:tabular-nums}
+main{max-width:1180px;margin:0 auto;padding:48px 28px 96px}
+header.top h1{font-size:30px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px;display:flex;align-items:center;gap:12px}
+header.top p{color:var(--label2);max-width:68ch;margin:0}
+section{margin-top:56px}
+section>h2{font-size:17px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+section>p.d{color:var(--label2);margin:0 0 20px;max-width:70ch}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--fill);border:0.5px solid var(--sep);border-radius:14px;padding:18px}
+.over{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--label3)}
+.meta{font-size:11px;color:var(--label2)}
+code{font:11px ui-monospace,"SF Mono",monospace;color:var(--label2)}
+/* principles */
+.pr b{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+.pr span{color:var(--label2)}
+/* color */
+.sw{display:flex;gap:12px;align-items:center}
+.chip{width:40px;height:40px;border-radius:10px;border:0.5px solid var(--sep);flex:none}
+/* type */
+.trow{display:grid;grid-template-columns:150px 1fr 220px;gap:16px;align-items:baseline;padding:12px 0;border-top:0.5px solid var(--sep)}
+.trow:first-of-type{border-top:0}
+/* space */
+.sp{display:flex;align-items:flex-end;gap:14px}
+.sp i{display:block;background:var(--tint);opacity:.85;border-radius:3px}
+/* tiles */
+.tile{width:26px;height:26px;border-radius:var(--r-tile);display:grid;place-items:center;font:600 10px ui-rounded,-apple-system,sans-serif;letter-spacing:.02em;flex:none}
+.tiles{display:flex;flex-wrap:wrap;gap:14px}
+.tiles figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;width:72px}
+.tiles figcaption{font-size:10.5px;color:var(--label2);text-align:center}
+/* buttons */
+.btn{font:500 12px -apple-system,sans-serif;border-radius:999px;padding:5px 12px;border:0.5px solid var(--glassEdge);background:var(--glass);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);color:var(--label);display:inline-flex;gap:6px;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.btn.primary{background:var(--tint);color:#fff;border-color:transparent;box-shadow:0 1px 2px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--label2);box-shadow:none}
+.btn.icon{padding:5px;width:26px;height:26px;justify-content:center}
+.btn.danger{color:var(--crit)}
+/* status */
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.stat{display:inline-flex;gap:6px;align-items:center;font-size:11px;color:var(--label2)}
+/* wallpaper + glass panel */
+.wall{border-radius:22px;padding:28px;background:radial-gradient(120% 90% at 10% 0%,var(--wall1),transparent 60%),radial-gradient(90% 80% at 100% 30%,var(--wall2),transparent 60%),radial-gradient(90% 90% at 40% 100%,var(--wall3),transparent 60%),var(--page);display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+.panel{width:360px;border-radius:var(--r-panel);background:var(--glass);backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);border:0.5px solid var(--glassEdge);box-shadow:0 20px 50px -18px rgba(0,0,0,.35);padding:12px 12px 10px}
+.ph{display:flex;align-items:center;gap:8px;padding:2px 4px 10px}
+.ph b{font-weight:600;font-size:13px}
+.hero{border-radius:var(--r-card);padding:14px;background:color-mix(in srgb,var(--pos) 8%,var(--glass));border:0.5px solid var(--glassEdge);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.hero .fig{font:300 30px/1 ui-rounded,-apple-system,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.bar{height:3px;border-radius:2px;background:var(--fill);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:2px}
+.sec{padding:14px 6px 4px}
+.row{display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:var(--r-row)}
+.row:hover{background:var(--fill)}
+.row .n{font-size:13px;font-weight:500;line-height:1.25}
+.row .fig{font:500 13px ui-rounded,-apple-system,sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.foot{display:flex;align-items:center;justify-content:space-between;padding:10px 2px 0;margin-top:6px;border-top:0.5px solid var(--sep)}
+.do,.dont{font-size:12px;color:var(--label2);padding-left:18px;position:relative;margin:4px 0}
+.do::before{content:"";position:absolute;left:0;top:6px;width:8px;height:8px;border-radius:50%;background:var(--pos)}
+.dont::before{content:"";position:absolute;left:0;top:6px;width:8px;height:8px;border-radius:50%;background:var(--crit)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="mark" viewBox="0 0 24 24"><path d="M5.2 17.4A8 8 0 1 1 18.8 17.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="18.8" cy="17.4" r="2.1" fill="currentColor"/><path d="M12 12 15.6 8.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="ref" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.9"/></symbol>
+  <symbol id="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<main>
+<header class="top">
+  <h1><svg width="30" height="30" style="color:var(--tint)"><use href="#mark"/></svg>TokenTray style sheet</h1>
+  <p>"Quiet instrument." A precise, light Mac utility. Hierarchy comes from size and tone, not weight. One tint, system colours, native Liquid Glass, an 8-point rhythm. Opens in light or dark to match your Mac.</p>
+</header>
+
+<section>
+  <h2>Principles</h2>
+  <p class="d">Five rules every screen follows.</p>
+  <div class="grid g3 pr">
+    <div class="card"><b>Light, not loud</b><span>Regular and medium weights only. Bold is never used. Big numbers are light.</span></div>
+    <div class="card"><b>One tint</b><span>Indigo marks what you can press. Green, amber and red appear only for status.</span></div>
+    <div class="card"><b>Tone before colour</b><span>Primary, secondary and tertiary grey carry the hierarchy. Colour is rare, so it means something.</span></div>
+    <div class="card"><b>8-point rhythm</b><span>Every gap is 4, 8, 12, 16 or 20. Rows are 40 high. No orphan space, no crowding.</span></div>
+    <div class="card"><b>Native material</b><span>System Liquid Glass and semantic colours, so dark mode and Increase Contrast just work.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Colour</h2>
+  <p class="d">Semantic macOS colours. Values shown are this appearance; the app uses the system names so they adapt automatically.</p>
+  <div class="grid g3">
+    <div class="sw"><span class="chip" style="background:var(--label)"></span><div><b>Label</b><div class="meta">Names, figures · <code>labelColor</code></div></div></div>
+    <div class="sw"><span class="chip" style="background:var(--label2)"></span><div><b>Secondary</b><div class="meta">Meta lines, notes · <code>secondaryLabelColor</code></div></div></div>
+    <div class="sw"><span class="chip" style="background:var(--label3)"></span><div><b>Tertiary</b><div class="meta">Section labels, chevrons · <code>tertiaryLabelColor</code></div></div></div>
+    <div class="sw"><span class="chip" style="background:var(--tint)"></span><div><b>Tint · Indigo</b><div class="meta">Buttons, mark, focus · <code>systemIndigo</code></div></div></div>
+    <div class="sw"><span class="chip" style="background:var(--pos)"></span><div><b>Positive</b><div class="meta">Healthy, best pick · <code>systemGreen</code></div></div></div>
+    <div class="sw"><span class="chip" style="background:var(--cau)"></span><div><b>Caution</b><div class="meta">Running low · <code>systemOrange</code></div></div></div>
+    <div class="sw"><span class="chip" style="background:var(--crit)"></span><div><b>Critical</b><div class="meta">Empty, rejected · <code>systemRed</code></div></div></div>
+    <div class="sw"><span class="chip" style="background:var(--sep)"></span><div><b>Hairline</b><div class="meta">0.5 pt dividers · <code>separatorColor</code></div></div></div>
+    <div class="sw"><span class="chip" style="background:var(--fill)"></span><div><b>Fill</b><div class="meta">Hover, bar tracks · <code>label 4%</code></div></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Typography</h2>
+  <p class="d">San Francisco only. Figures use SF Pro Rounded with tabular digits so numbers never jump.</p>
+  <div class="card">
+    <div class="trow"><span class="meta">Figure / hero</span><span class="rounded tab" style="font-size:30px;font-weight:300;letter-spacing:-.02em">$18.40</span><code>Rounded 30 · Light · −2%</code></div>
+    <div class="trow"><span class="meta">Title</span><span style="font-size:15px;font-weight:500">Work OpenRouter</span><code>Text 15 · Medium</code></div>
+    <div class="trow"><span class="meta">Name</span><span style="font-size:13px;font-weight:500">DeepSeek</span><code>Text 13 · Medium</code></div>
+    <div class="trow"><span class="meta">Figure / row</span><span class="rounded tab" style="font-size:13px;font-weight:500">$1.20</span><code>Rounded 13 · Medium</code></div>
+    <div class="trow"><span class="meta">Body</span><span style="font-size:12px">Script key is capped until 01:13.</span><code>Text 12 · Regular</code></div>
+    <div class="trow"><span class="meta">Meta</span><span class="meta" style="font-size:11px">$1.20 left · lasts ~3 days</span><code>Text 11 · Regular · Secondary</code></div>
+    <div class="trow"><span class="meta">Overline</span><span class="over">Best right now</span><code>Text 11 · Medium · +6% · Tertiary</code></div>
+  </div>
+</section>
+
+<section>
+  <h2>Space, radius, size</h2>
+  <p class="d">An 8-point grid with a 4-point half step.</p>
+  <div class="grid g2">
+    <div class="card"><div class="sp">
+      <span><i style="width:4px;height:4px"></i><div class="meta">4</div></span>
+      <span><i style="width:8px;height:8px"></i><div class="meta">8</div></span>
+      <span><i style="width:12px;height:12px"></i><div class="meta">12</div></span>
+      <span><i style="width:16px;height:16px"></i><div class="meta">16</div></span>
+      <span><i style="width:20px;height:20px"></i><div class="meta">20</div></span>
+    </div><p class="meta" style="margin:12px 0 0">Panel inset 12 · card padding 14 · row padding 8 × 8 · section gap 12 · row height 40</p></div>
+    <div class="card"><div class="sp" style="align-items:center">
+      <span style="width:26px;height:26px;border-radius:7px;background:var(--fill);border:0.5px solid var(--sep)"></span>
+      <span style="width:60px;height:34px;border-radius:10px;background:var(--fill);border:0.5px solid var(--sep)"></span>
+      <span style="width:80px;height:44px;border-radius:16px;background:var(--fill);border:0.5px solid var(--sep)"></span>
+      <span style="width:90px;height:50px;border-radius:20px;background:var(--fill);border:0.5px solid var(--sep)"></span>
+      <span class="btn">Capsule</span>
+    </div><p class="meta" style="margin:12px 0 0">Tile 7 · row 10 · card 16 · panel 20 · controls capsule</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>App mark</h2>
+  <p class="d">A ring gauge: the open arc is your remaining allowance, the dot is where you are. Drawn, not an emoji or stock icon. Template in the menu bar; tinted only when a key needs you.</p>
+  <div class="grid g3">
+    <div class="card" style="display:flex;gap:18px;align-items:center"><svg width="56" height="56" style="color:var(--tint)"><use href="#mark"/></svg><div><b>Tint</b><div class="meta">Header, About</div></div></div>
+    <div class="card" style="display:flex;gap:18px;align-items:center"><svg width="18" height="18" style="color:var(--label)"><use href="#mark"/></svg><svg width="18" height="18" style="color:var(--cau)"><use href="#mark"/></svg><svg width="18" height="18" style="color:var(--crit)"><use href="#mark"/></svg><div><b>Menu bar</b><div class="meta">Normal · low · needs you</div></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Provider tiles</h2>
+  <p class="d">Monograms on a 14% wash of the provider colour. Light enough to scan, distinct enough to recognise.</p>
+  <div class="tiles" id="tiles"></div>
+</section>
+
+<section>
+  <h2>Controls and status</h2>
+  <p class="d">Capsule glass buttons. One primary per surface.</p>
+  <div class="card" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+    <span class="btn primary"><svg width="12" height="12"><use href="#copy"/></svg>Use</span>
+    <span class="btn"><svg width="12" height="12"><use href="#plus"/></svg>Add key</span>
+    <span class="btn icon"><svg width="13" height="13"><use href="#ref"/></svg></span>
+    <span class="btn ghost"><svg width="14" height="14"><use href="#gear"/></svg></span>
+    <span class="btn danger">Remove</span>
+    <span style="width:1px;height:20px;background:var(--sep)"></span>
+    <span class="stat"><i class="dot" style="background:var(--pos)"></i>Healthy</span>
+    <span class="stat"><i class="dot" style="background:var(--cau)"></i>Running low</span>
+    <span class="stat"><i class="dot" style="background:var(--crit)"></i>Needs fixing</span>
+  </div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card"><p class="do">Show status with a 6 pt dot and secondary text.</p><p class="do">Colour a meta line only when something is wrong.</p><p class="do">Keep one primary button per surface.</p></div>
+    <div class="card"><p class="dont">Bold text, solid colour blocks, heavy shadows.</p><p class="dont">Colour as decoration.</p><p class="dont">Dividers between every row; spacing does that job.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Panel, assembled</h2>
+  <p class="d">All tokens together over a wallpaper so the glass reads. The real app uses macOS 26 Liquid Glass.</p>
+  <div class="wall">
+    <div class="panel">
+      <div class="ph"><svg width="16" height="16" style="color:var(--tint)"><use href="#mark"/></svg><b>TokenTray</b><span class="meta" style="margin-left:auto;color:var(--label3)">Updated 12s ago</span><span class="btn icon" style="width:24px;height:24px"><svg width="12" height="12"><use href="#ref"/></svg></span></div>
+      <div class="hero">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span class="over">Best right now</span><span class="stat"><i class="dot" style="background:var(--pos)"></i>Healthy</span></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px"><span class="tile" style="width:32px;height:32px;border-radius:9px;font-size:12px;background:color-mix(in srgb,#6467F2 14%,transparent);color:#6467F2">OR</span><div style="flex:1"><div style="font-size:15px;font-weight:500">Work OpenRouter</div><div class="meta">OpenRouter · sk-or-v1-…7a1c</div></div><span class="btn primary"><svg width="12" height="12"><use href="#copy"/></svg>Use</span></div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><span class="fig">$18.40</span><span class="meta">left of $25</span><span class="meta" style="margin-left:auto">lasts ~6 days</span></div>
+        <div class="bar" style="margin-top:8px"><i style="width:74%;background:var(--pos)"></i></div>
+        <div style="font-size:12px;color:var(--label2);margin-top:10px">Script key is capped until 01:13. Old OpenRouter needs fixing.</div>
+      </div>
+      <div class="sec over">Coming back</div>
+      <div class="row"><span class="tile" style="background:color-mix(in srgb,#6467F2 14%,transparent);color:#6467F2">OR</span><div style="flex:1"><div class="n">Script key</div><div class="meta">Daily spend cap</div></div><div><div class="fig">1h 47m</div><div class="meta" style="text-align:right">01:13</div></div></div>
+      <div class="sec over">Other keys</div>
+      <div class="row"><span class="tile" style="background:color-mix(in srgb,#4D6BFE 14%,transparent);color:#4D6BFE">DS</span><div style="flex:1"><div class="n">DeepSeek</div><div class="meta">Lasts ~3 days</div></div><div style="display:flex;gap:6px;align-items:center"><i class="dot" style="background:var(--cau)"></i><span class="fig">$1.20</span></div></div>
+      <div class="row"><span class="tile" style="background:color-mix(in srgb,#3B78E7 14%,transparent);color:#3B78E7">G</span><div style="flex:1"><div class="n">Gemini</div><div class="meta">Active · usage not shared</div></div><span class="fig" style="color:var(--label2)">Ready</span></div>
+      <div class="row"><span class="tile" style="background:color-mix(in srgb,#6467F2 14%,transparent);color:#6467F2">OR</span><div style="flex:1"><div class="n">Old OpenRouter</div><div class="meta" style="color:var(--crit)">Key rejected</div></div><i class="dot" style="background:var(--crit)"></i></div>
+      <div class="foot"><span class="btn"><svg width="12" height="12"><use href="#plus"/></svg>Add key</span><span class="btn ghost icon"><svg width="14" height="14"><use href="#gear"/></svg></span></div>
+    </div>
+  </div>
+</section>
+</main>
+<script>
+const P=[["OpenRouter","OR","#6467F2"],["DeepSeek","DS","#4D6BFE"],["Gemini","G","#3B78E7"],["Groq","GQ","#F55036"],["OpenAI","OA","#10A37F"],["Anthropic","AN","#C96442"],["Mistral","MI","#FA520F"],["xAI","X","#6b6b70"],["Cerebras","CB","#F05A28"],["Together","TG","#0F6FFF"],["Moonshot","KM","#5b5b60"],["SiliconFlow","SF","#7C3AED"],["Hugging Face","HF","#D99400"],["Fireworks","FW","#6720FF"],["Cohere","CO","#39594D"]];
+document.getElementById('tiles').innerHTML=P.map(([n,i,c])=>`<figure><span class="tile" style="background:color-mix(in srgb,${c} 14%,transparent);color:${c}">${i}</span><figcaption>${n}</figcaption></figure>`).join('');
+</script>
+</body>
+</html>

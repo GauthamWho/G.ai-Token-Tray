@@ -1,0 +1,6 @@
+.build/
+build/
+shots/
+.claude/
+.DS_Store
+*.xcuserstate

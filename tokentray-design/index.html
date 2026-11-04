@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TokenTray — design round 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Caveat:wght@600;700&family=Kalam:wght@400;700&family=Newsreader:opsz,wght@6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef0f3; --panel:#ffffff; --panel2:#f6f7f9; --line:#e2e5ea; --ink:#16181d; --ink2:#525a66; --ink3:#7b8492;
+  --accent:#0a6cdb; --ok:#178046; --warn:#b26a00; --bad:#c42b1c; --okbg:#e6f4ec; --warnbg:#fdf1de; --badbg:#fbe7e5;
+  --desk:#cfd6df; --task:#f3f4f6; --shadow:0 18px 40px -12px rgba(20,30,50,.28),0 2px 6px rgba(20,30,50,.08);
+  color-scheme:light;
+}
+html.dark{
+  --bg:#111317; --panel:#1d2026; --panel2:#24282f; --line:#30353e; --ink:#eef1f5; --ink2:#aab3bf; --ink3:#87909d;
+  --accent:#3d9bff; --ok:#4ccf86; --warn:#ffb547; --bad:#ff7a6b; --okbg:#173326; --warnbg:#3a2c12; --badbg:#3d1d1a;
+  --desk:#262b33; --task:#1b1e23; --shadow:0 18px 40px -12px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent);color:#fff}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.num{font-family:"SF Mono",ui-monospace,"Geist Mono",monospace;font-variant-numeric:tabular-nums}
+header.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.topin{max-width:1500px;margin:0 auto;padding:14px 24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.brand{font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px}
+.brand small{font-weight:500;color:var(--ink3);font-size:13px}
+nav.tabs{display:flex;gap:4px;background:var(--panel2);padding:4px;border-radius:10px;border:1px solid var(--line)}
+nav.tabs button{border:0;background:none;padding:7px 14px;border-radius:7px;font-weight:500;color:var(--ink2)}
+nav.tabs button[aria-selected=true]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.spacer{flex:1}
+.tbtn{border:1px solid var(--line);background:var(--panel);padding:7px 12px;border-radius:8px;display:flex;gap:6px;align-items:center}
+main{max-width:1500px;margin:0 auto;padding:28px 24px 120px}
+section[hidden]{display:none}
+h1{font-size:26px;line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
+.lede{color:var(--ink2);margin:0 0 26px;max-width:72ch}
+.ico{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* option grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:26px}
+.opt{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,box-shadow .2s}
+.opt.sel{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.opthead{padding:14px 16px 12px;display:flex;gap:12px;align-items:flex-start}
+.optletter{width:30px;height:30px;border-radius:8px;background:var(--ink);color:var(--panel);display:grid;place-items:center;font-weight:700;flex:none}
+.opthead h3{margin:0;font-size:15px}
+.opthead p{margin:2px 0 0;color:var(--ink2);font-size:13px}
+.pick{margin-left:auto;border:1px solid var(--line);background:var(--panel2);padding:6px 12px;border-radius:8px;font-weight:600;white-space:nowrap}
+.opt.sel .pick{background:var(--accent);border-color:var(--accent);color:#fff}
+.desk{background:var(--desk);padding:0 0 26px;display:flex;flex-direction:column;align-items:flex-end;flex:1}
+.fly{position:relative;margin-top:9px;overflow:visible!important}
+.fly>:first-child{border-radius:12px 12px 0 0}.fly>:last-child{border-radius:0 0 12px 12px}
+.fly::before{content:"";position:absolute;top:-7px;right:var(--arrow,164px);width:12px;height:12px;background:var(--panel);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
+.f .fly::before{background:#fbf7ee;border-color:#e3dccb}
+html.dark .f .fly::before{background:#211e18;border-color:#3a352b}
+.taskbar{align-self:stretch;height:26px;background:var(--task);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:0 12px;font-size:12px;color:var(--ink2)}
+.trayicon{height:20px;padding:0 6px;display:flex;gap:4px;align-items:center;border-radius:5px;background:color-mix(in srgb,var(--ink) 12%,transparent);font-weight:600;color:var(--ink)}
+.mbitem{color:var(--ink2)}
+.traffic{display:flex;gap:8px}.traffic i{width:12px;height:12px;border-radius:50%;display:block}
+.fly{width:372px;margin-right:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.flyhead{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.flyhead b{font-size:14px}
+.flyhead .meta{color:var(--ink3);font-size:12px;margin-left:auto}
+.iconbtn{border:0;background:none;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--ink2)}
+.iconbtn:hover{background:var(--panel2)}
+.flyfoot{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line);background:var(--panel2)}
+.flyfoot button{border:1px solid var(--line);background:var(--panel);padding:6px 10px;border-radius:7px;display:flex;align-items:center;gap:6px;font-size:13px}
+.flyfoot button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.pv{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:11px;flex:none;letter-spacing:.02em}
+.badge{font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--ink2);white-space:nowrap}
+.st-ok{color:var(--ok)} .st-warn{color:var(--warn)} .st-bad{color:var(--bad)}
+.pill-ok{background:var(--okbg);color:var(--ok);border-color:transparent}
+.pill-warn{background:var(--warnbg);color:var(--warn);border-color:transparent}
+.pill-bad{background:var(--badbg);color:var(--bad);border-color:transparent}
+.bar{height:6px;border-radius:99px;background:var(--panel2);outline:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px}
+.fill-ok{background:var(--ok)} .fill-warn{background:var(--warn)} .fill-bad{background:var(--bad)}
+.muted{color:var(--ink3)} .small{font-size:12px}
+
+/* A fluent */
+.a-card{padding:12px 14px;border-bottom:1px solid var(--line)}
+.a-top{display:flex;gap:10px;align-items:center}
+.a-name{font-weight:600;font-size:13.5px;line-height:1.2}
+.a-key{font-size:11.5px;color:var(--ink3)}
+.a-big{margin-left:auto;text-align:right}
+.a-big b{font-size:17px;display:block;line-height:1.1}
+.a-win{display:grid;grid-template-columns:104px 1fr 62px;gap:8px;align-items:center;font-size:12px;margin-top:8px;color:var(--ink2)}
+.a-win .r{text-align:right;color:var(--ink3);font-size:11.5px}
+.a-say{margin-top:9px;font-size:12.5px;display:flex;gap:6px;align-items:center}
+
+/* B runway */
+.b-axis{padding:14px 14px 6px}
+.b-axis h4{margin:0 0 10px;font-size:12px;color:var(--ink2);font-weight:600}
+.b-track{position:relative;height:10px;margin:0 0 4px}
+.b-row{display:grid;grid-template-columns:84px 1fr;gap:8px;align-items:center;font-size:12px;margin-bottom:9px}
+.b-lane{position:relative;height:16px;background:var(--panel2);border-radius:4px;outline:1px solid var(--line)}
+.b-lane .use{position:absolute;left:0;top:0;bottom:0;border-radius:4px 0 0 4px;opacity:.85}
+.b-lane .out{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--bad)}
+.b-lane .rst{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ok)}
+.b-ticks{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink3);padding-left:92px}
+.b-legend{display:flex;gap:14px;font-size:11.5px;color:var(--ink2);padding:2px 14px 12px}
+.b-legend span{display:flex;align-items:center;gap:5px}
+.b-legend i{width:10px;height:2px;display:inline-block}
+.b-list .row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--line);font-size:12.5px}
+
+/* C rings */
+.c-row{display:flex;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+.c-row svg{flex:none}
+.c-leg{font-size:11.5px;color:var(--ink2);display:grid;gap:2px}
+.c-leg span{display:flex;gap:6px;align-items:center}
+.c-leg i{width:8px;height:8px;border-radius:2px}
+
+/* D table */
+.d-tab{width:100%;border-collapse:collapse;font-size:12px}
+.d-tab th{text-align:left;font-weight:600;color:var(--ink3);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;padding:8px 8px;border-bottom:1px solid var(--line)}
+.d-tab td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.d-tab td:first-child,.d-tab th:first-child{padding-left:14px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+/* E bento */
+.e-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.e-tile{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px}
+.e-tile.big{grid-column:span 2}
+.e-tile .k{font-size:11.5px;color:var(--ink2);display:flex;gap:6px;align-items:center}
+.e-tile .v{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-top:6px}
+.e-tile.big .v{font-size:34px}
+
+/* F editorial */
+.f .fly{background:#fbf7ee;border-color:#e3dccb;color:#1d1a14}
+html.dark .f .fly{background:#211e18;border-color:#3a352b;color:#efe8d8}
+.f .flyhead,.f .flyfoot{border-color:#e3dccb;background:transparent}
+html.dark .f .flyhead,html.dark .f .flyfoot{border-color:#3a352b}
+.f-entry{padding:12px 16px;border-bottom:1px solid #e3dccb}
+html.dark .f-entry{border-color:#3a352b}
+.f-entry h5{font-family:Fraunces,Georgia,serif;font-size:16px;margin:0;font-weight:700}
+.f-entry p{margin:3px 0 0;font-size:12.5px}
+.f-red{color:#b3261e} html.dark .f-red{color:#ff8a7a}
+.f-line{display:flex;justify-content:space-between;font-size:12px;border-top:1px dashed #d8cfbb;margin-top:7px;padding-top:6px}
+html.dark .f-line{border-color:#4a4335}
+
+/* G advisor */
+.g-now{padding:14px;border-bottom:1px solid var(--line)}
+.g-now .lab{font-size:12px;color:var(--ink2)}
+.g-now .pickm{display:flex;gap:10px;align-items:center;margin-top:8px}
+.g-now .pickm b{font-size:18px}
+.g-why{font-size:12.5px;color:var(--ink2);margin-top:6px}
+.g-q{padding:4px 0}
+.g-q .row{display:flex;gap:10px;align-items:center;padding:8px 14px;font-size:12.5px}
+.g-q .row .when{margin-left:auto;font-size:12px;color:var(--ink3)}
+
+/* detail window */
+.win{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;max-width:1100px}
+.wintitle{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink2)}
+.wctl{margin-left:auto;display:flex;gap:16px;color:var(--ink3)}
+.dhead{display:flex;gap:14px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.dhead h2{margin:0;font-size:20px}
+.dbody{display:grid;grid-template-columns:1.05fr 1fr;gap:0}
+.dcol{padding:18px 22px}
+.dcol+.dcol{border-left:1px solid var(--line)}
+.dcol h4{margin:0 0 12px;font-size:13px}
+.lim{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.lim:last-child{border-bottom:0}
+.lim .t{font-weight:600;font-size:13px}
+.lim .s{font-size:12px;color:var(--ink3)}
+.lim .bar{grid-column:span 2;margin-top:4px}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:12.5px}
+.kv dt{color:var(--ink3)} .kv dd{margin:0}
+table.models{width:100%;border-collapse:collapse;font-size:12.5px}
+table.models th{text-align:right;font-weight:600;color:var(--ink3);font-size:11px;padding:6px 6px;border-bottom:1px solid var(--line)}
+table.models th:first-child,table.models td:first-child{text-align:left}
+table.models td{text-align:right;padding:7px 6px;border-bottom:1px solid var(--line)}
+.forecast{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:14px 0}
+.forecast b{font-size:16px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;font-size:12px}
+.seg button{border:0;background:var(--panel);padding:4px 10px}
+.seg button.on{background:var(--ink);color:var(--panel)}
+
+/* problems */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
+.prob{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.prob h3{margin:0;font-size:14.5px;display:flex;gap:8px;align-items:center}
+.prob .why{font-size:12.5px;color:var(--ink2);margin:0}
+.mini{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel2);font-size:12.5px}
+.mini .mt{display:flex;gap:8px;align-items:center;font-weight:600}
+.mini .mb{margin-top:5px;color:var(--ink2)}
+.mini .ma{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.mini .ma button{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:4px 9px;font-size:12px}
+.mini .ma button.p{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mini.bad{background:var(--badbg);border-color:transparent}
+.mini.warn{background:var(--warnbg);border-color:transparent}
+.mini.ok{background:var(--okbg);border-color:transparent}
+.fix{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);padding-top:8px}
+.fix b{color:var(--ink)}
+.toggle{width:34px;height:20px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;display:inline-block;transition:background .2s}.toggle::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.16,1,.3,1)}.toggle.on{background:var(--ok)}.toggle.on::after{transform:translateX(14px)}
+.lk{display:flex;flex-direction:column;align-items:flex-end;align-self:stretch}.lk .taskbar{align-self:stretch}.lkfly{position:relative;width:372px;margin:9px 16px 0 0;box-shadow:var(--shadow)}.lkfly::before{content:"";position:absolute;top:-7px;right:var(--arrow);width:12px;height:12px;background:var(--l-bg);border-left:inherit;border-top:inherit;transform:rotate(45deg)}
+@media (max-width:700px){.lkfly{width:calc(100% - 20px);margin-right:10px}}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.filters button{border:1px solid var(--line);background:var(--panel);padding:5px 11px;border-radius:999px;font-size:12.5px}
+.filters button.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+
+/* add flow */
+.flow{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.step .sh{padding:10px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--ink2);display:flex;gap:8px;align-items:center}
+.step .sb{padding:16px}
+.field{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:var(--panel2);font-size:13px;display:flex;gap:8px;align-items:center}
+.field.focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;padding:6px 0}
+.lbl{font-size:12px;color:var(--ink2);margin:12px 0 5px}
+.spin{width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* picked dock */
+.dock{position:fixed;left:50%;bottom:18px;transform:translate(-50%,140%);background:var(--ink);color:var(--panel);padding:10px 16px;border-radius:12px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow);transition:transform .45s cubic-bezier(.16,1,.3,1);z-index:30;font-size:13.5px}
+.dock.show{transform:translate(-50%,0)}
+.dock b{font-weight:700}
+
+@media (max-width:700px){
+  .grid{grid-template-columns:1fr}
+  .fly{width:calc(100% - 20px);margin-right:10px}
+  .dbody{grid-template-columns:1fr}
+  .dcol+.dcol{border-left:0;border-top:1px solid var(--line)}
+  main{padding:20px 12px 120px}
+  .topin{padding:12px}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.3-9.3M17 6l3 3M14 9l2 2"/></symbol>
+  <symbol id="i-off" viewBox="0 0 24 24"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 5.2-2.7M19 13a10 10 0 0 0-2-1.4M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.7 5M12 20h.01"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M12 14l4-4"/><path d="M3.3 19a10 10 0 1 1 17.4 0"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M16 3l4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M18 10h-1.3A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+</svg>
+
+<header class="top"><div class="topin">
+  <div class="brand"><svg class="ico" style="width:20px;height:20px;color:var(--accent)"><use href="#i-gauge"/></svg>TokenTray <small>for Mac · design round 3 · sample data</small></div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="round3">Round 3 · Looks for G1</button>
+    <button role="tab" aria-selected="false" data-tab="round2">Round 2</button>
+    <button role="tab" aria-selected="false" data-tab="styles">1 · Round 1 styles</button>
+    <button role="tab" aria-selected="false" data-tab="detail">2 · Key detail</button>
+    <button role="tab" aria-selected="false" data-tab="problems">3 · Every problem state</button>
+    <button role="tab" aria-selected="false" data-tab="add">4 · Add-key flow</button>
+  </nav>
+  <div class="spacer"></div>
+  <button class="tbtn" id="theme"><svg class="ico"><use href="#i-sun"/></svg>Light / dark</button>
+</div></header>
+
+<main>
+<section id="round3">
+  <h1>Round 3: fourteen looks for G1</h1>
+  <p class="lede">Same G1 layout and data in every option; only the look changes: colours, type, spacing, light or dark, and what the menu bar shows. Pick one or more; you can also mix, e.g. "L1 colours with L12 spacing".</p>
+  <div class="grid" id="optgrid3"></div>
+</section>
+<section id="round2" hidden>
+  <h1>Round 2: ten takes on the Switch advisor</h1>
+  <p class="lede">You picked <b>G</b>. Each option answers "which key should I use right now?" in a different way. Clocks tick live; in G2 click the task tabs, in G5 click the toggle. Pick one or more.</p>
+  <div class="grid" id="optgrid2"></div>
+</section>
+<section id="styles" hidden>
+  <h1>Pick the menu bar panel style</h1>
+  <p class="lede">Same 5 sample keys in every option: a Claude subscription (5-hour session + weekly caps), OpenAI API, OpenRouter, Gemini free tier and Groq free tier. Clocks tick live. Click <b>Pick</b> on the one you like (you can pick more than one).</p>
+  <div class="grid" id="optgrid"></div>
+</section>
+
+<section id="detail" hidden>
+  <h1>Key detail window</h1>
+  <p class="lede">Opens when you click a key. Every limit the provider has, side by side, with what resets when, where the money went, and the forecast with an honest range.</p>
+  <div class="seg" style="margin-bottom:16px" id="detsw"></div>
+  <div id="detwin"></div>
+</section>
+
+<section id="problems" hidden>
+  <h1>Every problem state, and what the app does</h1>
+  <p class="lede">The things that go wrong with API keys and free tiers. Each card shows the trigger, exactly what appears in the menu bar, and the fix built into the app.</p>
+  <div class="filters" id="pfilt"></div>
+  <div class="pgrid" id="pgrid"></div>
+</section>
+
+<section id="add" hidden>
+  <h1>Add a key: four steps, under 20 seconds</h1>
+  <p class="lede">Paste once. The app works out the provider, tests the key, tells you honestly what it can and can't track, then asks only for a name.</p>
+  <div class="flow" id="flow"></div>
+</section>
+</main>
+
+<div class="dock" id="dock"><span>Picked: <b id="dockv"></b></span><span class="muted" style="color:inherit;opacity:.7">tell Claude in chat</span></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const I=(n,st='')=>`<svg class="ico" style="${st}"><use href="#i-${n}"/></svg>`;
+const T0=Date.now();const NOWS=new Date(T0).toLocaleString([], {weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}).replace(',','');
+function fmt(s){s=Math.max(0,Math.round(s));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;
+  if(d)return `${d}d ${h}h`; if(h)return `${h}h ${String(m).padStart(2,'0')}m`; if(m)return `${m}m ${String(x).padStart(2,'0')}s`; return `${x}s`;}
+const cd=(s,pre='')=>`<span class="num cd" data-s="${s}" data-pre="${pre}">${pre}${fmt(s)}</span>`;
+function clockAt(s){const d=new Date(T0+s*1000);return d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});}
+const lvl=p=>p>=85?'bad':p>=60?'warn':'ok';
+const bar=(p,l)=>`<div class="bar"><i class="fill-${l||lvl(p)}" style="width:${Math.min(100,p)}%"></i></div>`;
+
+const KEYS=[
+ {sh:'Claude',id:'claude',pv:'AN',col:'#c96442',name:'Claude Max',sub:'subscription · you@mail',src:'Plan usage',big:'28%',bigl:'session left',st:'warn',
+  wins:[{k:'5-hour session',p:72,s:6480,type:'rolling'},{k:'Weekly · all models',p:41,s:274000,type:'fixed'},{k:'Weekly · Opus',p:63,s:274000,type:'fixed'}],
+  say:'At this pace the session runs out in ~45 min, before it resets.',runH:0.75,resetH:1.8,today:'6 sessions this week'},
+ {sh:'OpenAI',id:'openai',pv:'OA',col:'#10a37f',name:'Work OpenAI',sub:'sk-proj-…Q8f2',src:'Admin',big:'$18.40',bigl:'of $50 credit',st:'ok',
+  wins:[{k:'Credit used',p:63,s:null,type:'balance'},{k:'Tokens / minute',p:34,s:38,type:'rolling'},{k:'Requests / day',p:12,s:26000,type:'fixed'}],
+  say:'$4.12 today · lasts ~6 days at $3.10/day.',runH:144,resetH:null,today:'$4.12 · 1.9M tokens'},
+ {sh:'OpenRouter',id:'or',pv:'OR',col:'#6467f2',name:'Personal OpenRouter',sub:'sk-or-v1-…7a1c',src:'Exact',big:'$3.20',bigl:'of $10',st:'warn',
+  wins:[{k:'Credit used',p:68,s:null,type:'balance'},{k:'Free models / day',p:76,s:25900,type:'fixed'}],
+  say:'$0.85 today · ~4 days left. 12 free requests left today.',runH:96,resetH:7.2,today:'$0.85 · 640k tokens'},
+ {sh:'Gemini',id:'gem',pv:'G',col:'#3b78e7',name:'Gemini free',sub:'AIza…91kD',src:'Metered',big:'38',bigl:'requests left',st:'bad',
+  wins:[{k:'Requests / day',p:85,s:25900,type:'fixed'},{k:'Requests / minute',p:40,s:22,type:'rolling'},{k:'Tokens today',p:null,s:null,type:'count',v:'3.1M counted'}],
+  say:'Runs out in ~2h at this pace. Resets midnight Pacific = '+clockAt(25900)+' your time.',runH:2,resetH:7.2,today:'212 requests · 3.1M tokens'},
+ {sh:'Groq',id:'groq',pv:'GQ',col:'#f55036',name:'Groq free',sub:'gsk_…m2Pz',src:'Limits only',big:'Blocked',bigl:'requests too large',st:'bad',
+  wins:[{k:'Tokens / minute',p:100,s:41,type:'rolling',note:'needs 37k, limit 8k'},{k:'Requests / day',p:3,s:25900,type:'fixed'}],
+  say:'Your tool sends 37k tokens per request; free tier allows 8k/min. Use Groq for small chats only.',runH:0,resetH:null,today:'0 successful'}
+];
+const order=[...KEYS].sort((a,b)=>a.runH-b.runH);
+const pvb=k=>`<span class="pv" style="background:${k.col}">${k.pv}</span>`;
+const srcb=k=>`<span class="badge">${k.src}</span>`;
+const stIcon=k=>k.st==='ok'?I('check','color:var(--ok)'):I('alert',`color:var(--${k.st==='bad'?'bad':'warn'})`);
+const head=(t)=>`<div class="flyhead">${I('gauge','color:var(--accent)')}<b>${t||'TokenTray'}</b><span class="meta">updated <span class="num">12s</span> ago</span><button class="iconbtn" aria-label="Refresh">${I('refresh')}</button></div>`;
+const foot=`<div class="flyfoot"><button class="primary">${I('plus')}Add key</button><button>${I('swap')}Switch helper</button><span class="spacer"></span><button aria-label="Settings">${I('gear')}</button></div>`;
+const tray=(lv)=>`<div class="taskbar"><span class="mbitem">${I('sun','width:14px;height:14px')}</span><span class="trayicon" title="TokenTray">${I('gauge',`width:14px;height:14px;color:var(--${lv})`)}<span class="num" style="font-size:12px">28%</span></span><span class="num mbitem" style="font-size:12.5px">${NOWS}</span></div>`;
+
+const OPTS=[
+ {L:'A',t:'Native cards',d:'Native macOS menu bar popover. Every limit window as a bar with its reset clock. Calm, familiar.',r:()=>{
+   return head()+order.map(k=>`<div class="a-card"><div class="a-top">${pvb(k)}<div><div class="a-name">${k.name}</div><div class="a-key num">${k.sub}</div></div>
+   <div class="a-big"><b class="num st-${k.st}">${k.big}</b><span class="muted small">${k.bigl}</span></div></div>
+   ${k.wins.filter(w=>w.p!=null).map(w=>`<div class="a-win"><span>${w.k}</span>${bar(w.p)}<span class="r">${w.s?cd(w.s,'↻ '):'<span class=num>'+w.p+'%</span>'}</span></div>`).join('')}
+   <div class="a-say">${stIcon(k)}<span>${k.say}</span></div></div>`).join('')+foot;}},
+ {L:'B',t:'Runway timeline',d:'Next 24 hours on one axis: red line = when each key runs out, green = when it resets. You see the gap at a glance.',r:()=>{
+   const pos=h=>Math.min(100,h/24*100);
+   return head()+`<div class="b-axis"><h4>Next 24 hours</h4>${order.map(k=>`<div class="b-row"><span style="display:flex;gap:6px;align-items:center">${pvb(k).replace('26px','18px')}<span class="small">${k.sh}</span></span>
+   <div class="b-lane"><div class="use" style="width:${pos(k.runH)}%;background:${k.col}"></div>${k.runH<24?`<div class="out" style="left:${pos(k.runH)}%"></div>`:''}${k.resetH?`<div class="rst" style="left:${pos(k.resetH)}%"></div>`:''}</div></div>`).join('')}
+   <div class="b-ticks num"><span>now</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div></div>
+   <div class="b-legend"><span><i style="background:var(--bad)"></i>runs out</span><span><i style="background:var(--ok)"></i>resets</span><span class="muted">bar = usable time</span></div>
+   <div class="b-list">${order.map(k=>`<div class="row">${stIcon(k)}<b style="min-width:110px">${k.name}</b><span class="muted">${k.runH===0?'blocked now':k.runH<24?'out in ~'+(k.runH<1?Math.round(k.runH*60)+'m':k.runH+'h'):'~'+Math.round(k.runH/24)+' days'}</span><span class="num" style="margin-left:auto">${k.big}</span></div>`).join('')}</div>`+foot;}},
+ {L:'C',t:'Limit rings',d:'One ring per limit window (outer = shortest window). Reads like a fitness tracker: close a ring = hit that limit.',r:()=>{
+   const ring=k=>{const ws=k.wins.filter(w=>w.p!=null).slice(0,3);return `<svg width="58" height="58" viewBox="0 0 58 58">${ws.map((w,i)=>{const r=25-i*7,c=2*Math.PI*r;return `<circle cx="29" cy="29" r="${r}" fill="none" stroke="var(--panel2)" stroke-width="5"/><circle cx="29" cy="29" r="${r}" fill="none" stroke="var(--${lvl(w.p)==='ok'?'ok':lvl(w.p)})" stroke-width="5" stroke-linecap="round" stroke-dasharray="${c*w.p/100} ${c}" transform="rotate(-90 29 29)"/>`}).join('')}</svg>`};
+   return head()+order.map(k=>`<div class="c-row">${ring(k)}<div style="flex:1;min-width:0"><div style="display:flex;gap:6px;align-items:center"><b style="font-size:13.5px">${k.name}</b>${srcb(k)}</div>
+   <div class="c-leg" style="margin-top:4px">${k.wins.filter(w=>w.p!=null).slice(0,3).map(w=>`<span><i style="background:var(--${lvl(w.p)})"></i>${w.k} <b class="num">${w.p}%</b>${w.s?' · '+cd(w.s,'resets '):''}</span>`).join('')}</div></div></div>`).join('')+foot;}},
+ {L:'D',t:'Power table',d:'Dense grid for people with many keys. Tightest limit per key, when it resets, how long you have. Sort by any column.',r:()=>{
+   return head()+`<table class="d-tab"><thead><tr><th>Key</th><th>Left</th><th>Tightest</th><th>Resets</th></tr></thead><tbody>${order.map(k=>{const w=[...k.wins].filter(w=>w.p!=null).sort((a,b)=>b.p-a.p)[0];return `<tr><td><span class="dot" style="background:var(--${k.st})"></span> <b>${k.sh}</b><div class="muted small">${k.src}</div></td><td class="num"><b>${k.big}</b></td><td><span class="small">${w.k}</span>${bar(w.p)}</td><td class="small">${w.s?cd(w.s):'—'}</td></tr>`}).join('')}</tbody></table>
+   <div style="padding:10px 14px;font-size:12px" class="muted">Today across all keys: <b class="num" style="color:var(--ink)">$4.97 · 5.6M tokens · 431 requests</b></div>`+foot;}},
+ {L:'E',t:'Bento summary',d:'Big numbers first: what is about to run out gets the biggest tile. Detail is one click away.',r:()=>{
+   const u=order[1];return head()+`<div class="e-grid"><div class="e-tile big" style="background:var(--warnbg);border-color:transparent"><div class="k">${pvb(u).replace('26px','18px')} ${u.name} · needs attention</div><div class="v num st-warn">${u.big} <span style="font-size:14px;font-weight:500">${u.bigl}</span></div><div class="small" style="margin-top:4px">${u.say}</div></div>
+   ${order.filter(k=>k!==u).map(k=>`<div class="e-tile"><div class="k">${pvb(k).replace('26px','18px')} ${k.sh}</div><div class="v num st-${k.st}">${k.big}</div><div class="small muted">${k.bigl}</div></div>`).join('')}
+   <div class="e-tile big"><div class="k">Spent today, all keys</div><div class="v num">$4.97</div><div class="small muted">5.6M tokens · on track for $31 this week</div></div></div>`+foot;}},
+ {L:'F',t:'Paper ledger',d:'Cream paper, serif names, red ink only where something is wrong. Your notebook taste, applied to a utility.',cls:'f',r:()=>{
+   return head('The ledger')+order.map(k=>`<div class="f-entry"><div style="display:flex;justify-content:space-between;align-items:baseline"><h5>${k.name}</h5><span class="num ${k.st==='ok'?'':'f-red'}" style="font-weight:600">${k.big}</span></div>
+   <p class="${k.st==='bad'?'f-red':''}">${k.say}</p>${k.wins.filter(w=>w.p!=null).slice(0,2).map(w=>`<div class="f-line"><span>${w.k} · <span class="num">${w.p}%</span></span><span>${w.s?cd(w.s,'resets in '):''}</span></div>`).join('')}</div>`).join('')+foot;}},
+ {L:'G',t:'Switch advisor',d:'Answers "which one should I use right now?" Ranks keys by what is still usable, and queues when the others come back.',r:()=>{
+   return head()+`<div class="g-now"><div class="lab">Best to use right now</div><div class="pickm">${pvb(KEYS[1])}<div><b>Work OpenAI</b><div class="small muted">63% credit used · no limit close · $3.10/day</div></div><span class="badge pill-ok" style="margin-left:auto">Use this</span></div>
+   <div class="g-why">Claude session is at 72% and will run out before it resets. Gemini has 38 requests left.</div></div>
+   <div class="g-q"><div class="row muted small" style="padding-bottom:2px">Coming back</div>
+   ${[[KEYS[0],6480,'session resets'],[KEYS[2],25900,'free requests reset'],[KEYS[3],25900,'daily requests reset']].map(([k,s,w])=>`<div class="row">${pvb(k)}<span>${k.name}<div class="small muted">${w}</div></span><span class="when">${cd(s,'in ')}<div>${clockAt(s)}</div></span></div>`).join('')}
+   <div class="row">${pvb(KEYS[4])}<span>Groq free<div class="small st-bad">too small for your tool</div></span><span class="when">—</span></div></div>`+foot;}},
+];
+
+const picked=new Set();
+function renderOpts(){$('#optgrid').innerHTML=OPTS.map(o=>`<article class="opt ${o.cls||''} ${picked.has(o.L)?'sel':''}" data-l="${o.L}"><div class="opthead"><span class="optletter">${o.L}</span><div><h3>${o.t}</h3><p>${o.d}</p></div><button class="pick">${picked.has(o.L)?'Picked':'Pick'}</button></div>
+ <div class="desk">${tray(o.L==='A'?'bad':'warn')}<div class="fly">${o.r()}</div></div></article>`).join('');}
+$('#optgrid').addEventListener('click',e=>{const b=e.target.closest('.pick');if(!b)return;const l=b.closest('.opt').dataset.l;picked.has(l)?picked.delete(l):picked.add(l);renderOpts();
+  $('#dockv').textContent=[...picked].sort().join(', ');$('#dock').classList.toggle('show',picked.size>0);});
+renderOpts();
+
+/* detail */
+const DET={
+ claude:{k:KEYS[0],lims:[['5-hour session','rolling window, starts at your first message',72,6480],['Weekly · all models','fixed, resets Monday 9:00 AM',41,274000],['Weekly · Opus','fixed, resets Monday 9:00 AM',63,274000],['Extra usage','pay-as-you-go after limits · off',0,null]],
+  days:[3,5,4,6,8,2,1,7,9,6,8,10,7,8],unit:'% of week',models:[['Opus 5.5','182','—','—','64%'],['Sonnet 5.5','95','—','—','33%'],['Haiku 5.5','12','—','—','3%']],mh:['Model','Messages','In','Out','Share'],
+  fc:'Session runs out in ~45 min (range 30–70 min)',fc2:'Resets at '+clockAt(6480)+'. Weekly limit is fine: ~4.1 days of headroom.',
+  kv:[['Plan','Max (5×)'],['Read from','Claude Code local usage + account sign-in'],['Session started','2:44 PM (first message)'],['Weekly reset','Monday 9:00 AM'],['Data freshness','live, every 60 s']]},
+ openai:{k:KEYS[1],lims:[['Prepaid credit','$31.60 used of $50',63,null],['Tokens per minute','gpt-5.4 · 30k TPM (tier 2)',34,38],['Requests per day','10,000 RPD',12,26000],['Monthly budget','your own cap: $40',52,2200000]],
+  days:[2.1,3.4,1.2,4.8,3.9,2.2,0.4,3.1,5.2,4.4,2.8,3.6,3.0,4.1],unit:'$ per day',models:[['gpt-5.4','$2.61','1.1M','220k','63%'],['gpt-5.4-mini','$0.98','610k','95k','24%'],['text-embedding-4','$0.53','—','—','13%']],mh:['Model','Cost','In','Out','Share'],
+  fc:'$18.40 lasts ~6 days (range 4–9 days)',fc2:'At this week’s pace you’ll run out around Mon 10 Nov. Monthly budget will not be hit.',
+  kv:[['Org','Work (org-4kQ…)'],['Project','Default project'],['Usage tier','Tier 2'],['Read from','Admin key · Usage + Costs API'],['Rate limits from','response headers, last call 38 s ago']]}
+};
+let det='openai';
+function drawDet(){const D=DET[det],k=D.k,mx=Math.max(...D.days);
+ $('#detsw').innerHTML=Object.keys(DET).map(id=>`<button class="${id===det?'on':''}" data-d="${id}">${DET[id].k.name}</button>`).join('');
+ const W=440,H=130,bw=W/D.days.length;
+ const chart=`<svg viewBox="0 0 ${W} ${H+18}" width="100%" role="img" aria-label="Usage per day, last 14 days">${D.days.map((v,i)=>{const h=v/mx*H;return `<rect x="${i*bw+3}" y="${H-h}" width="${bw-6}" height="${h}" rx="3" fill="${i===D.days.length-1?k.col:'color-mix(in srgb,'+k.col+' 45%,transparent)'}"><title>${v}</title></rect>`}).join('')}
+  <line x1="0" x2="${W}" y1="${H+.5}" y2="${H+.5}" stroke="var(--line)"/><text x="0" y="${H+14}" font-size="10" fill="var(--ink3)">14 days ago</text><text x="${W}" y="${H+14}" font-size="10" fill="var(--ink3)" text-anchor="end">today</text></svg>`;
+ $('#detwin').innerHTML=`<div class="win"><div class="wintitle"><span class="traffic"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span style="flex:1;text-align:center;font-weight:600">${k.name}</span><span style="width:52px"></span></div>
+ <div class="dhead">${pvb(k).replace(/26px/g,'40px')}<div><h2>${k.name}</h2><div class="muted num small">${k.sub}</div></div>${srcb(k)}<span class="badge pill-${k.st}">${k.st==='ok'?'Healthy':k.st==='warn'?'Running low':'Blocked'}</span>
+ <span class="spacer"></span><button class="tbtn">${I('refresh')}Check now</button><button class="tbtn">${I('gear')}Budget & alerts</button></div>
+ <div class="dbody"><div class="dcol"><h4>All limits on this key</h4>${D.lims.map(([t,s,p,r])=>`<div class="lim"><span class="t">${t}</span><span class="num ${'st-'+lvl(p)}" style="font-weight:600">${p}%</span><span class="s">${s}</span><span class="s" style="text-align:right">${r?cd(r,'resets in '):''}</span>${bar(p)}</div>`).join('')}
+ <div class="forecast"><div class="small muted">Forecast</div><b>${D.fc}</b><div class="small" style="margin-top:4px;color:var(--ink2)">${D.fc2}</div></div>
+ <h4>Details from the provider</h4><dl class="kv">${D.kv.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></div>
+ <div class="dcol"><div style="display:flex;align-items:center;margin-bottom:10px"><h4 style="margin:0">Usage · ${D.unit}</h4><span class="spacer"></span><span class="seg"><button>24h</button><button class="on">14d</button><button>30d</button></span></div>${chart}
+ <h4 style="margin-top:18px">Where it went today</h4><table class="models"><thead><tr>${D.mh.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${D.models.map(r=>`<tr>${r.map((c,i)=>`<td class="${i?'num':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div></div>`;}
+$('#detsw').addEventListener('click',e=>{const b=e.target.closest('button');if(b){det=b.dataset.d;drawDet();}});
+drawDet();
+
+/* problems */
+const P=[
+ ['Limits','5-hour session used up','Claude/ChatGPT subscription session hits 100% mid-work.','bad','alert','Claude Max · session used up','Resets at '+clockAt(6480)+' ('+fmt(6480)+'). Weekly limit still has 59%.',['Switch to Work OpenAI','Remind me at reset'],'Shows the exact reset time, counts it down in the tray, and suggests the best key that still has room.'],
+ ['Limits','Weekly cap close','Session limits reset, but the weekly cap is at 92%.','warn','clock','Weekly · Opus at 92%','About 2 sessions of Opus left until Mon 9:00 AM.',['Use Sonnet instead'],'Every window is tracked separately; the tightest one decides the headline.'],
+ ['Limits','Rate limited right now (429)','Too many requests this minute.','warn','clock','Gemini · paused for <span class="num cd" data-s="22" data-pre="">22s</span>','Requests/minute is full. Nothing is wrong with the key.',['Okay'],'Short limits show as a countdown, not an alarm. No notification for anything under 60 s.'],
+ ['Limits','Request bigger than the limit','Your tool sends 37k tokens, the free tier allows 8k/min (Groq).','bad','x','Groq free · request too large','Needs 37k tokens per request, limit is 8k per minute. Waiting will not fix this.',['Why?','Hide for OpenCode'],'Detects "will never fit" separately from "try later" so you stop retrying.'],
+ ['Data','Provider shares no usage','Gemini and some others give no usage API.','warn','eye','Gemini · usage not shared by Google','Turn on Meter mode to count every token yourself, then set your free daily limit.',['Turn on Meter mode','Enter limit'],'Badge says "Metered" so you always know the number is counted by the app, not the provider.'],
+ ['Data','Normal key, admin key needed','OpenAI/Anthropic only show spend to admin keys.','warn','key','Work OpenAI · limits only','Rate limits work. For money spent and balance, add an admin key (read-only).',['Add admin key','Skip'],'Explains the gap once, then keeps showing the limits it can see.'],
+ ['Key','Key revoked or wrong (401)','Key deleted, rotated or mistyped.','bad','x','Personal OpenRouter · key rejected','OpenRouter says this key is invalid. It may have been deleted or rotated.',['Replace key','Remove'],'Never retries a dead key in a loop. One notification, then a grey card.'],
+ ['Key','Same key added twice','You paste a key that is already in the list.','ok','check','Already added as "Personal OpenRouter"','No duplicate created.',['Open it'],'Keys are fingerprinted (hash), never compared in plain text.'],
+ ['Key','Two keys, one account','Both keys draw from the same balance.','warn','link','2 keys share one balance','"Work" and "Script" both use org-4kQ. Balance shown once, usage split per key.',['Group them'],'Stops double-counting the same money.'],
+ ['Money','Balance below zero / auto-recharge','Credits ran out but auto top-up kept charging.','bad','alert','OpenRouter · −$1.40','Auto-recharge is on. You were charged $10 at 3:12 PM.',['Open billing'],'Shows real money leaving, not just tokens.'],
+ ['Money','Unknown price for a new model','New model, not in the price list yet.','warn','alert','Cost ≈ estimate','Tokens are exact. Price for "gpt-5.5-preview" is unknown, using gpt-5.4 rates.',['Set price'],'"≈" marks every estimated number. Price list updates from the providers.'],
+ ['Time','Resets in another time zone','Gemini resets at midnight Pacific, not your midnight.','ok','clock','Resets at '+clockAt(25900)+' your time','(midnight Pacific).',['Okay'],'Every reset is converted to your local clock, with the source zone in small text.'],
+ ['Time','Not enough history to forecast','New key or a one-off spike.','warn','gauge','Lasts 2–9 days','Only 1 day of data. Range narrows after 3 days.',['Okay'],'Forecasts always show a range; a single spike can’t fake "runs out in 1 hour".'],
+ ['Time','Limits changed by the provider','Free tier was cut overnight.','warn','alert','Gemini limit changed','Requests/day: 1,000 → 250 since yesterday.',['Okay'],'The app compares today’s limits with yesterday’s and tells you when they change.'],
+ ['Network','No internet / stale numbers','Laptop offline or asleep.','warn','off','Offline · numbers from 2h ago','Shown faded with the time they were read. Refreshes when you’re back online.',['Retry'],'Never shows old numbers as if they were live.'],
+ ['Network','Provider is down','Provider API outage or very slow.','bad','cloud','OpenAI is having problems','Status page: "Elevated errors on API". Your key is fine.',['Status page'],'Separates "your key is broken" from "their service is broken".'],
+ ['Security','Key shown on screen','Someone is looking over your shoulder.','ok','eye','sk-or-v1-…7a1c','Keys are always masked. Copy needs Touch ID.',['Copy key'],'Stored in the macOS Keychain. Nothing leaves the Mac.'],
+ ['Security','Subscription with no API','Claude/ChatGPT plans have no key at all.','ok','link','Connect Claude account','Reads usage from Claude Code’s local files or your signed-in account.',['Connect'],'Plans and keys sit in the same list, both with all their limit windows.'],
+];
+const cats=['All',...new Set(P.map(p=>p[0]))];let cat='All';
+function drawP(){ $('#pfilt').innerHTML=cats.map(c=>`<button class="${c===cat?'on':''}">${c}</button>`).join('');
+ $('#pgrid').innerHTML=P.filter(p=>cat==='All'||p[0]===cat).map(([c,t,why,l,ic,mt,mb,acts,fix])=>`<article class="prob"><h3>${I(ic,`color:var(--${l==='ok'?'ok':l})`)}${t}</h3><p class="why">${why}</p>
+ <div class="mini ${l}"><div class="mt">${I(ic)}<span>${mt}</span></div><div class="mb">${mb}</div><div class="ma">${acts.map((a,i)=>`<button class="${i?'':'p'}">${a}</button>`).join('')}</div></div>
+ <div class="fix"><b>Built in:</b> ${fix}</div></article>`).join('');}
+$('#pfilt').addEventListener('click',e=>{const b=e.target.closest('button');if(b){cat=b.textContent;drawP();}});
+drawP();
+
+/* add flow */
+$('#flow').innerHTML=[
+ ['1 · Paste',`<div class="lbl" style="margin-top:0">API key or account</div><div class="field focus">${I('key')}<span class="num">sk-ant-api03-••••••••••••</span></div><p class="small muted">Or <a href="#" style="color:var(--accent)">connect a Claude / ChatGPT plan</a> (no key needed).</p>`],
+ ['2 · Recognise & test',`<div class="check">${I('check','color:var(--ok)')}<span>Looks like an <b>Anthropic</b> key</span></div><div class="check">${I('check','color:var(--ok)')}<span>Key works (1 tiny call, $0.00)</span></div><div class="check"><span class="spin"></span><span>Reading rate limits…</span></div>`],
+ ['3 · What we can track',`<div class="check">${I('check','color:var(--ok)')}<span>Rate limits per minute, with reset clocks</span></div><div class="check">${I('check','color:var(--ok)')}<span>Tokens used, counted by Meter mode</span></div><div class="check">${I('x','color:var(--warn)')}<span>Money spent / balance <span class="muted">— needs an Anthropic admin key</span></span></div><div class="ma" style="display:flex;gap:6px;margin-top:8px"><button class="tbtn">Add admin key</button><button class="tbtn">Skip for now</button></div>`],
+ ['4 · Name it',`<div class="lbl" style="margin-top:0">Name</div><div class="field">Side project Claude</div><div class="lbl">Monthly budget (optional)</div><div class="field num">$20 · resets on day 1</div><div class="lbl">Warn me at</div><div class="field num">50% · 80% · 95%</div><button class="tbtn" style="margin-top:14px;background:var(--accent);color:#fff;border-color:var(--accent)">Add to menu bar</button>`]
+].map(([h,b])=>`<div class="step"><div class="sh">${h}</div><div class="sb">${b}</div></div>`).join('');
+
+/* ===== ROUND 2: Switch advisor variants ===== */
+const [CL,OA,OR,GM,GQ]=KEYS;
+const mini=k=>pvb(k).replace(/26px/g,'20px');
+const TASKS={
+ code:{lab:'Coding agent',best:OA,why:'Big requests (~37k tokens). Needs high per-minute limits.',alt:[OR,CL],no:[[GQ,'request too large'],[GM,'38 requests left']]},
+ chat:{lab:'Quick chat',best:GM,why:'Small requests. Free requests left today, fast replies.',alt:[GQ,OR],no:[[CL,'save session for coding']]},
+ long:{lab:'Long document',best:CL,why:'Best for long context, session has 28% left, enough for ~1 long doc.',alt:[OA],no:[[GQ,'8k/min too small'],[GM,'daily cap close']]},
+};
+const comeback=[[CL,6480,'session resets'],[OR,25900,'free requests reset'],[GM,25900,'daily requests reset']];
+const usable=[[OA,92,'credit $18.40 · no limit close'],[OR,64,'$3.20 left · 12 free req'],[CL,41,'session 28% left'],[GM,22,'38 requests left'],[GQ,0,'too small for coding tools']];
+const scoreLvl=s=>s>=60?'ok':s>=25?'warn':'bad';
+
+const OPTS2=[
+ {L:'G1',t:'Advisor, refined',d:'Round-1 G cleaned up: one recommendation, why, then who comes back when.',mb:'OA',r:()=>head()+`<div class="g-now"><div class="lab">Best to use right now</div><div class="pickm">${pvb(OA)}<div><b>Work OpenAI</b><div class="small muted">no limit close · lasts ~6 days</div></div><button class="badge pill-ok" style="margin-left:auto">Use this</button></div><div class="g-why">Claude will run out before it resets. Gemini has 38 requests left.</div></div>
+ <div class="g-q"><div class="row muted small">Coming back</div>${comeback.map(([k,s,w])=>`<div class="row">${pvb(k)}<span>${k.name}<div class="small muted">${w}</div></span><span class="when">${cd(s,'in ')}<div>${clockAt(s)}</div></span></div>`).join('')}</div>`+foot},
+
+ {L:'G2',t:'Task-aware advisor',d:'Tell it what you are doing; the pick changes. Coding needs big limits, chat can use small free tiers. (Click the tabs.)',mb:'OA',r:()=>{const id='t'+Math.random().toString(36).slice(2,7);return head()+`<div class="g-now" data-task-root="${id}"><div class="seg" style="width:100%;display:flex">${Object.entries(TASKS).map(([k,v],i)=>`<button style="flex:1" class="${i?'':'on'}" data-task="${k}">${v.lab}</button>`).join('')}</div><div class="taskout" style="margin-top:12px">${taskOut('code')}</div></div>`+foot}},
+
+ {L:'G3',t:'Ranked by "usable now"',d:'Every key gets a usable-now score. Top one is the pick; the bar shows how much room each has.',mb:'OA',r:()=>head()+`<div style="padding:8px 0">${usable.map(([k,s,w],i)=>`<div class="row" style="display:grid;grid-template-columns:18px 26px 1fr 64px;gap:10px;align-items:center;padding:8px 14px;${i===0?'background:var(--okbg)':''}"><span class="num muted">${i+1}</span>${pvb(k)}<span><b style="font-size:13px">${k.name}</b><div class="small muted">${w}</div></span><span>${bar(100-s>100?100:s,scoreLvl(s))}<div class="num small" style="text-align:right;margin-top:2px">${s}</div></span></div>`).join('')}</div>`+foot},
+
+ {L:'G4',t:'Comeback timeline',d:'Vertical timeline from now: what you can use at each moment as limits reset through the day.',mb:'OA',r:()=>head()+`<div style="padding:14px 14px 6px 14px">${[['Now',null,[OA,OR],'Gemini 38 left, Claude 28%'],['+'+fmt(6480),6480,[CL],'Claude session resets'],['+'+fmt(25900),25900,[OR,GM],'free daily limits reset'],['Mon 9:00',274000,[CL],'Claude weekly caps reset']].map(([t,s,ks,w],i,a)=>`<div style="display:grid;grid-template-columns:70px 14px 1fr;gap:10px;min-height:54px"><span class="num small ${i?'muted':''}" style="${i?'':'font-weight:700'}">${s?cd(s,'+'):'Now'}<div class="small muted">${s?clockAt(s):''}</div></span><span style="display:flex;flex-direction:column;align-items:center"><i style="width:10px;height:10px;border-radius:50%;background:${i?'var(--line)':'var(--ok)'};outline:2px solid var(--panel)"></i>${i<a.length-1?'<i style="flex:1;width:2px;background:var(--line)"></i>':''}</span><span><span style="display:flex;gap:4px">${ks.map(mini).join('')}</span><div class="small muted" style="margin-top:3px">${w}</div></span></div>`).join('')}</div>`+foot},
+
+ {L:'G5',t:'Auto-switch control',d:'Advisor that also drives your tools: when a key runs out, OpenCode moves to the next in this order. Toggle on/off.',mb:'OA',r:()=>head()+`<div class="g-now"><div style="display:flex;align-items:center;gap:10px"><b style="font-size:13.5px">Auto-switch OpenCode</b><span class="toggle on" style="margin-left:auto"></span></div><div class="small muted" style="margin-top:4px">Now using <b style="color:var(--ink)">Work OpenAI</b>. Switched from Claude 12 min ago.</div></div>
+ <div style="padding:6px 0">${[[OA,'in use','ok'],[OR,'next','ok'],[CL,'back '+clockAt(6480),'warn'],[GM,'38 left','warn'],[GQ,'skipped · too small','bad']].map(([k,w,l],i)=>`<div class="row" style="display:flex;align-items:center;gap:10px;padding:7px 14px"><span class="muted" style="cursor:grab">⋮⋮</span><span class="num small muted">${i+1}</span>${mini(k)}<span style="font-size:13px">${k.name}</span><span class="badge pill-${l}" style="margin-left:auto">${w}</span></div>`).join('')}</div>`+foot},
+
+ {L:'G6',t:'Quality vs cost',d:'Flip between "best model I still have" and "cheapest that works". Shows the price of each choice.',mb:'OR',r:()=>head()+`<div class="g-now"><div class="seg" style="display:flex"><button class="on" style="flex:1">Best quality</button><button style="flex:1">Cheapest</button></div>
+ <div class="pickm" style="margin-top:12px">${pvb(CL)}<div><b>Claude Max · Opus</b><div class="small muted">best available · $0 extra (plan) · 28% session left</div></div></div>
+ <div class="pickm" style="margin-top:10px;opacity:.75">${pvb(OA)}<div><b>Work OpenAI · gpt-5.4</b><div class="small muted">~$0.42 per coding task</div></div></div>
+ <div class="pickm" style="margin-top:10px;opacity:.6">${pvb(OR)}<div><b>OpenRouter · free models</b><div class="small muted">$0 · 12 requests left today</div></div></div></div>`+foot},
+
+ {L:'G7',t:'One-line minimal',d:'The calmest version. One answer, one countdown. Everything else behind "All keys".',mb:'OA',r:()=>head()+`<div style="padding:22px 16px;text-align:center"><div class="small muted">Use</div><div style="display:flex;gap:10px;align-items:center;justify-content:center;margin:8px 0">${pvb(OA).replace(/26px/g,'34px')}<b style="font-size:22px">Work OpenAI</b></div><div class="small muted">Next one back: Claude ${cd(6480,'in ')}</div></div>
+ <div style="display:flex;justify-content:center;gap:6px;padding:0 0 14px">${KEYS.map(k=>`<span title="${k.name}" style="display:flex;flex-direction:column;align-items:center;gap:3px">${mini(k)}<i class="dot" style="background:var(--${k.st})"></i></span>`).join('')}</div>`+foot},
+
+ {L:'G8',t:'Advisor + full cards',d:'Recommendation on top, then the round-1 A cards underneath for anyone who wants every number.',mb:'OA',r:()=>head()+`<div class="g-now" style="background:var(--okbg)"><div class="pickm" style="margin-top:0">${pvb(OA)}<div><b>Use Work OpenAI</b><div class="small" style="color:var(--ok)">most room · Claude back ${cd(6480,'in ')}</div></div></div></div>`+
+  order.slice(0,3).map(k=>`<div class="a-card"><div class="a-top">${mini(k)}<div class="a-name">${k.name}</div><div class="a-big"><b class="num st-${k.st}" style="font-size:14px">${k.big}</b></div></div>${k.wins.filter(w=>w.p!=null).slice(0,2).map(w=>`<div class="a-win"><span>${w.k}</span>${bar(w.p)}<span class="r">${w.s?cd(w.s,'↻ '):w.p+'%'}</span></div>`).join('')}</div>`).join('')+`<div class="row small muted" style="padding:8px 14px">+ 2 more keys</div>`+foot},
+
+ {L:'G9',t:'Paper advisor',d:'Same advisor in your notebook taste: cream paper, serif, red ink only for trouble.',cls:'f',mb:'OA',r:()=>head('Today’s pick')+`<div class="f-entry"><h5>Use Work OpenAI.</h5><p>Most room left, lasts about six days.</p></div>
+ ${[[CL,'Claude Max','Back at '+clockAt(6480)+'. Session nearly spent.',1],[OR,'OpenRouter','$3.20 left. Fine for small jobs.',0],[GM,'Gemini','38 requests left until '+clockAt(25900)+'.',1],[GQ,'Groq','Too small for coding tools.',1]].map(([k,n,t,r])=>`<div class="f-entry" style="padding:9px 16px"><div style="display:flex;justify-content:space-between"><b style="font-family:Fraunces,serif">${n}</b></div><p class="${r?'f-red':''}" style="margin-top:2px">${t}</p></div>`).join('')}`+foot},
+
+ {L:'G10',t:'Menu bar does the talking',d:'The menu bar itself shows the pick ("OpenAI · 6d"), so you rarely open the panel. Panel = compact advisor.',mb:'name',r:()=>head()+`<div class="g-now"><div class="small muted">Menu bar shows</div><div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">${['OpenAI · 6d','Claude 28%','⚠ Gemini 38'].map((x,i)=>`<span class="trayicon" style="${i==2?'color:var(--bad)':''}">${I('gauge','width:13px;height:13px')}<span class="num" style="font-size:12px">${x.replace('⚠ ','')}</span></span>`).join('')}</div><div class="small muted" style="margin-top:6px">Normal · low session · something needs attention</div></div>
+ <div class="g-q">${comeback.slice(0,2).map(([k,s,w])=>`<div class="row">${mini(k)}<span>${k.name}<div class="small muted">${w}</div></span><span class="when">${cd(s,'in ')}</span></div>`).join('')}</div>`+foot},
+];
+function taskOut(t){const v=TASKS[t];return `<div class="pickm" style="margin-top:0">${pvb(v.best)}<div><b>${v.best.name}</b><div class="small muted">${v.why}</div></div></div>
+ <div class="small" style="margin-top:10px;color:var(--ink2)">Also fine: ${v.alt.map(k=>k.name).join(', ')}</div>
+ ${v.no.map(([k,w])=>`<div class="small st-bad" style="margin-top:4px;display:flex;gap:6px;align-items:center">${I('x','width:13px;height:13px')}${k.name}: ${w}</div>`).join('')}`;}
+const picked2=new Set();
+const tray2=(o)=>{const lab=o.mb==='name'?'OpenAI · 6d':'28%';return `<div class="taskbar"><span class="mbitem">${I('sun','width:14px;height:14px')}</span><span class="trayicon">${I('gauge','width:14px;height:14px;color:var(--ok)')}<span class="num" style="font-size:12px">${lab}</span></span><span class="num mbitem" style="font-size:12.5px">${NOWS}</span></div>`};
+function renderOpts2(){$('#optgrid2').innerHTML=OPTS2.map(o=>`<article class="opt ${o.cls||''} ${picked2.has(o.L)?'sel':''}" data-l="${o.L}"><div class="opthead"><span class="optletter" style="width:auto;padding:0 7px">${o.L}</span><div><h3>${o.t}</h3><p>${o.d}</p></div><button class="pick">${picked2.has(o.L)?'Picked':'Pick'}</button></div>
+ <div class="desk">${tray2(o)}<div class="fly" style="${o.mb==='name'?'--arrow:180px':''}">${o.r()}</div></div></article>`).join('');}
+$('#optgrid2').addEventListener('click',e=>{
+ const tb=e.target.closest('[data-task]');if(tb){const root=tb.closest('[data-task-root]');root.querySelectorAll('[data-task]').forEach(b=>b.classList.toggle('on',b===tb));root.querySelector('.taskout').innerHTML=taskOut(tb.dataset.task);return;}
+ const tg=e.target.closest('.toggle');if(tg){tg.classList.toggle('on');return;}
+ const b=e.target.closest('.pick');if(!b)return;const l=b.closest('.opt').dataset.l;picked2.has(l)?picked2.delete(l):picked2.add(l);renderOpts2();
+ $('#dockv').textContent=[...picked2].join(', ');$('#dock').classList.toggle('show',picked2.size>0);});
+renderOpts2();
+
+/* ===== ROUND 3: looks for G1 ===== */
+const LOOKS=[
+ {L:'L1',t:'macOS native · light',d:'System font, Apple blue, white popover. Looks like it shipped with the Mac.',mb:'pct',
+  v:{desk:'#d9dde3',bar:'#eceef1',bg:'#ffffff',ink:'#1d1d1f',ink2:'#6e6e73',line:'#e5e5ea',acc:'#0a6cdb',ok:'#1e8e3e',okbg:'#e8f5ec',warn:'#b25e00',bad:'#c4281c',font:"-apple-system,BlinkMacSystemFont,'SF Pro Text',Geist,sans-serif",head:'inherit',r:12,fs:13}},
+ {L:'L2',t:'macOS native · dark',d:'Same as L1 in dark mode. Follows your Mac setting automatically.',mb:'pct',
+  v:{desk:'#1b1d22',bar:'#24262c',bg:'#2a2c31',ink:'#f5f5f7',ink2:'#a1a1a6',line:'#3a3c42',acc:'#3d9bff',ok:'#4cd07d',okbg:'#1c3a28',warn:'#ffb340',bad:'#ff6b5e',font:"-apple-system,BlinkMacSystemFont,'SF Pro Text',Geist,sans-serif",head:'inherit',r:12,fs:13}},
+ {L:'L3',t:'Graphite',d:'Pure greys. Colour appears only when something is wrong, so trouble jumps out.',mb:'icon',
+  v:{desk:'#d6d7da',bar:'#e9e9eb',bg:'#f7f7f8',ink:'#18181b',ink2:'#71717a',line:'#e4e4e7',acc:'#18181b',ok:'#3f3f46',okbg:'#e4e4e7',warn:'#a16207',bad:'#b91c1c',font:'Geist,-apple-system,sans-serif',head:'inherit',r:10,fs:13,mono:true}},
+ {L:'L4',t:'Paper ledger',d:'Cream paper, serif names, red ink only for trouble. Your editorial taste.',mb:'pct',
+  v:{desk:'#d8d1c2',bar:'#ece6d8',bg:'#fbf7ee',ink:'#1d1a14',ink2:'#6b6252',line:'#e3dccb',acc:'#1d1a14',ok:'#2f6b3a',okbg:'#eaf0e0',warn:'#9a5b00',bad:'#b3261e',font:'Geist,-apple-system,sans-serif',head:'Fraunces,Georgia,serif',r:6,fs:13}},
+ {L:'L5',t:'Notebook',d:'Graph paper with a pink margin, hand-lettered headings, blue ink. Your video house style.',mb:'pct',note:true,
+  v:{desk:'#d9d6cc',bar:'#efece4',bg:'#fdfbf4',ink:'#1f2a44',ink2:'#5a6478',line:'#d9e2f0',acc:'#2456c9',ok:'#227a4a',okbg:'#e3f1e6',warn:'#b46900',bad:'#d0312d',font:'Kalam,Geist,sans-serif',head:'Caveat,cursive',r:8,fs:13.5}},
+ {L:'L6',t:'Editorial',d:'Magazine feel: white, serif headline, thin rules, one red. Calm and grown-up.',mb:'name',
+  v:{desk:'#dcdcdc',bar:'#efefef',bg:'#ffffff',ink:'#121212',ink2:'#5c5c5c',line:'#121212',acc:'#c8102e',ok:'#121212',okbg:'#f2f2f2',warn:'#c8102e',bad:'#c8102e',font:'Geist,-apple-system,sans-serif',head:'Newsreader,Georgia,serif',r:2,fs:13,rules:true}},
+ {L:'L7',t:'Bento tiles',d:'The pick in a big tile, each comeback in its own small tile. Apple-keynote clean.',mb:'pct',bento:true,
+  v:{desk:'#dfe3e8',bar:'#eef0f3',bg:'#f4f5f7',ink:'#111318',ink2:'#626b78',line:'#e3e6eb',acc:'#0a6cdb',ok:'#16803c',okbg:'#ffffff',warn:'#b25e00',bad:'#c4281c',font:'-apple-system,BlinkMacSystemFont,Geist,sans-serif',head:'inherit',r:14,fs:13}},
+ {L:'L8',t:'Warm sand',d:'Beige and terracotta, soft and friendly. Feels like a desk lamp, not a dashboard.',mb:'next',
+  v:{desk:'#d9cfc2',bar:'#ebe3d8',bg:'#f6f0e8',ink:'#2b2118',ink2:'#7a6a5a',line:'#e6dccf',acc:'#c2552d',ok:'#4f7a3a',okbg:'#e9eedc',warn:'#b5651d',bad:'#b23a2a',font:'Geist,-apple-system,sans-serif',head:'inherit',r:14,fs:13}},
+ {L:'L9',t:'Midnight ink',d:'Deep navy with a cool cyan accent. Easy on the eyes at night.',mb:'name',
+  v:{desk:'#0d1220',bar:'#141a2b',bg:'#182035',ink:'#e8edf8',ink2:'#94a0bb',line:'#26304a',acc:'#5cc8ff',ok:'#53d39b',okbg:'#16332d',warn:'#ffc35c',bad:'#ff7d7d',font:'Geist,-apple-system,sans-serif',head:'inherit',r:12,fs:13}},
+ {L:'L10',t:'High contrast',d:'Black on white, heavier type, bigger targets. Readable from across the room.',mb:'pct',
+  v:{desk:'#cfcfcf',bar:'#e6e6e6',bg:'#ffffff',ink:'#000000',ink2:'#2b2b2b',line:'#000000',acc:'#0040c1',ok:'#006b2b',okbg:'#d9f2e1',warn:'#8a4b00',bad:'#b00000',font:'-apple-system,BlinkMacSystemFont,Geist,sans-serif',head:'inherit',r:8,fs:14,heavy:true}},
+ {L:'L11',t:'Compact',d:'Tighter rows and smaller type, like Raycast. Fits more keys without scrolling.',mb:'icon',
+  v:{desk:'#d9dde3',bar:'#eceef1',bg:'#ffffff',ink:'#16181d',ink2:'#6b7280',line:'#eceef1',acc:'#5b5bd6',ok:'#1e8e3e',okbg:'#eef7f0',warn:'#b25e00',bad:'#c4281c',font:'Geist,-apple-system,sans-serif',head:'inherit',r:10,fs:12,tight:true}},
+ {L:'L12',t:'Spacious',d:'Big type and lots of air. The answer reads in half a second.',mb:'name',
+  v:{desk:'#dde1e6',bar:'#eff1f4',bg:'#ffffff',ink:'#111318',ink2:'#6a7280',line:'#eceef2',acc:'#0a6cdb',ok:'#16803c',okbg:'#e9f6ee',warn:'#b25e00',bad:'#c4281c',font:'-apple-system,BlinkMacSystemFont,Geist,sans-serif',head:'inherit',r:16,fs:14.5,airy:true}},
+ {L:'L13',t:'Provider tints',d:'Each key row tinted in its brand colour, so you recognise them without reading.',mb:'pct',tint:true,
+  v:{desk:'#d9dde3',bar:'#eceef1',bg:'#ffffff',ink:'#16181d',ink2:'#5f6773',line:'#eceef1',acc:'#10a37f',ok:'#16803c',okbg:'#e6f5f0',warn:'#b25e00',bad:'#c4281c',font:'Geist,-apple-system,sans-serif',head:'inherit',r:12,fs:13}},
+ {L:'L14',t:'Soft pastel',d:'Light pastel status colours, rounded everything. Friendly, never alarming.',mb:'next',
+  v:{desk:'#e2e0ec',bar:'#f0eff6',bg:'#fcfbff',ink:'#2a2740',ink2:'#77738f',line:'#ebe8f5',acc:'#7b61ff',ok:'#2f8f5b',okbg:'#e3f6ea',warn:'#a8640c',bad:'#c0392b',font:'Geist,-apple-system,sans-serif',head:'inherit',r:18,fs:13}},
+];
+function mbLabel(m){return m==='pct'?'28%':m==='name'?'OpenAI · 6d':m==='next'?'1h 48m':'';}
+function lookG1(o){const v={...o.v,bento:o.bento,note:o.note},pad=v.tight?'7px 12px':v.airy?'14px 18px':'10px 14px';
+ const sty=`--l-bg:${v.bg};--l-ink:${v.ink};--l-ink2:${v.ink2};--l-line:${v.line};--l-acc:${v.acc};--l-ok:${v.ok};--l-okbg:${v.okbg};--l-warn:${v.warn};--l-bad:${v.bad};--l-r:${v.r}px;font-family:${v.font};font-size:${v.fs}px;color:${v.ink};`;
+ const hf=`font-family:${v.head};`;const big=v.airy?24:v.tight?15:18;
+ const pv=(k,s=26)=>`<span class="pv" style="background:${v.mono&&k.st==='ok'?'#3f3f46':k.col};width:${s}px;height:${s}px;border-radius:${Math.min(v.r,8)}px;font-size:${s*.42}px">${k.pv}</span>`;
+ const lab=t=>`<div style="font-size:${v.fs-1.5}px;color:var(--l-ink2);${v.note?'font-family:Caveat,cursive;font-size:18px;color:var(--l-acc)':''}${v.rules?';text-transform:uppercase;letter-spacing:.08em;font-size:10.5px;font-weight:600':''}">${t}</div>`;
+ const why=`Claude will run out before it resets. Gemini has 38 requests left.`;
+ const rows=comeback.map(([k,s,w])=>v.bento?`<div style="background:var(--l-okbg);border:1px solid var(--l-line);border-radius:var(--l-r);padding:10px">${pv(k,22)}<div style="font-weight:600;margin-top:6px">${k.sh}</div><div style="font-size:11.5px;color:var(--l-ink2)">${w}</div><div class="num" style="font-weight:700;font-size:15px;margin-top:4px">${cd(s)}</div><div style="font-size:11px;color:var(--l-ink2)">${clockAt(s)}</div></div>`
+  :`<div style="display:flex;gap:10px;align-items:center;padding:${pad};${o.tint?`background:color-mix(in srgb,${k.col} 9%,transparent);margin:4px 8px;border-radius:var(--l-r);`:''}${v.rules?'border-top:1px solid var(--l-line);':''}">${pv(k)}<span style="flex:1;min-width:0"><span style="${v.heavy?'font-weight:700':'font-weight:500'}">${k.name}</span><div style="font-size:${v.fs-1.5}px;color:var(--l-ink2)">${w}</div></span><span style="text-align:right"><span class="num" style="font-weight:600">${cd(s,'in ')}</span><div style="font-size:${v.fs-1.5}px;color:var(--l-ink2)" class="num">${clockAt(s)}</div></span></div>`).join('');
+ const noteBg=v.note?`background-image:linear-gradient(90deg,transparent 30px,#f2a7b7 30px,#f2a7b7 31.5px,transparent 31.5px),linear-gradient(var(--l-line) 1px,transparent 1px),linear-gradient(90deg,var(--l-line) 1px,transparent 1px);background-size:100% 100%,16px 16px,16px 16px;`:'';
+ const btn=`<button style="margin-left:auto;border:${v.heavy?'2px solid var(--l-ink)':'0'};background:${v.mono?'var(--l-ink)':'var(--l-ok)'};color:${v.bg};padding:${v.airy?'8px 14px':'5px 11px'};border-radius:${Math.max(4,v.r-4)}px;font-weight:600;font-size:${v.fs-1}px;font-family:inherit">Use this</button>`;
+ const pick=v.bento?`<div style="padding:10px"><div style="background:var(--l-okbg);border:1px solid var(--l-line);border-radius:var(--l-r);padding:14px">${lab('Best to use right now')}<div style="display:flex;gap:10px;align-items:center;margin-top:8px">${pv(OA,34)}<div><div style="font-weight:700;font-size:20px;${hf}">Work OpenAI</div><div style="font-size:12px;color:var(--l-ink2)">no limit close · lasts ~6 days</div></div>${btn}</div><div style="font-size:12.5px;color:var(--l-ink2);margin-top:8px">${why}</div></div>
+   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">${rows}</div></div>`
+  :`<div style="padding:${v.airy?'18px':v.tight?'10px 12px':'14px'};${v.rules?'':'border-bottom:1px solid var(--l-line)'}">${lab('Best to use right now')}<div style="display:flex;gap:10px;align-items:center;margin-top:8px">${pv(OA,v.airy?40:30)}<div><div style="font-weight:${v.heavy?800:700};font-size:${big}px;line-height:1.15;${hf}">Work OpenAI</div><div style="font-size:${v.fs-1.5}px;color:var(--l-ink2)">no limit close · lasts ~6 days</div></div>${btn}</div><div style="font-size:${v.fs-.5}px;color:var(--l-ink2);margin-top:${v.airy?12:8}px;${v.rules?'border-left:0;font-style:italic':''}">${why}</div></div>
+   <div style="padding:${v.tight?'2px 0':'6px 0'}">${lab('<span style="padding:0 '+(v.airy?18:14)+'px">Coming back</span>')}${rows}</div>`;
+ return `<div class="lk" style="${sty}"><div class="taskbar" style="background:${v.bar};border-color:transparent;color:${v.ink2}"><span>${I('sun','width:14px;height:14px')}</span><span class="trayicon" style="background:color-mix(in srgb,${v.ink} 12%,transparent);color:${v.ink}">${I('gauge',`width:14px;height:14px;color:${v.ok}`)}${o.mb!=='icon'?`<span class="num" style="font-size:12px">${mbLabel(o.mb)}</span>`:''}</span><span class="num" style="font-size:12.5px">${NOWS}</span></div>
+ <div class="lkfly" style="--arrow:${o.mb==='name'?'176px':o.mb==='icon'?'150px':'164px'};background:var(--l-bg);border:${v.heavy||v.rules?'1.5px solid var(--l-ink)':'1px solid var(--l-line)'};border-radius:var(--l-r);${noteBg}">
+ <div style="display:flex;align-items:center;gap:8px;padding:${pad};border-bottom:1px solid var(--l-line)">${I('gauge',`color:var(--l-acc)`)}<b style="${hf}${v.note?'font-size:20px;':''}">TokenTray</b><span style="margin-left:auto;font-size:11.5px;color:var(--l-ink2)">updated 12s ago</span>${I('refresh','color:var(--l-ink2)')}</div>
+ ${pick}
+ <div style="display:flex;gap:8px;padding:${pad};border-top:1px solid var(--l-line);align-items:center;font-size:${v.fs-1}px"><span style="display:flex;gap:5px;align-items:center;color:var(--l-acc);font-weight:600">${I('plus')}Add key</span><span style="display:flex;gap:5px;align-items:center;color:var(--l-ink2);margin-left:10px">${I('swap')}Switch helper</span><span style="margin-left:auto;color:var(--l-ink2)">${I('gear')}</span></div></div></div>`;}
+const picked3=new Set();
+function renderLooks(){$('#optgrid3').innerHTML=LOOKS.map(o=>`<article class="opt ${picked3.has(o.L)?'sel':''}" data-l="${o.L}"><div class="opthead"><span class="optletter" style="width:auto;padding:0 7px">${o.L}</span><div><h3>${o.t}</h3><p>${o.d} <span class="muted">Menu bar: ${o.mb==='icon'?'icon only':'“'+mbLabel(o.mb)+'”'}.</span></p></div><button class="pick">${picked3.has(o.L)?'Picked':'Pick'}</button></div>
+ <div class="desk" style="background:${o.v.desk};padding:0 0 26px">${lookG1(o)}</div></article>`).join('');}
+$('#optgrid3').addEventListener('click',e=>{const b=e.target.closest('.pick');if(!b)return;const l=b.closest('.opt').dataset.l;picked3.has(l)?picked3.delete(l):picked3.add(l);renderLooks();
+ $('#dockv').textContent=[...picked3].join(', ');$('#dock').classList.toggle('show',picked3.size>0);});
+renderLooks();
+
+/* tabs, theme, clocks */
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+ document.querySelectorAll('main section').forEach(s=>s.hidden=s.id!==b.dataset.tab);window.scrollTo(0,0);});
+$('#theme').onclick=()=>document.documentElement.classList.toggle('dark');
+if(matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.add('dark');
+setInterval(()=>{const el=(Date.now()-T0)/1000;document.querySelectorAll('.cd').forEach(e=>{e.textContent=e.dataset.pre+fmt(+e.dataset.s-el);});},1000);
+</script>
+</body>
+</html>
